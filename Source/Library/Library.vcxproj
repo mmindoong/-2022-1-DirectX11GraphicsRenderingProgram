@@ -67,7 +67,7 @@
     <PostBuildEvent>
       <Command>mkdir "$(SolutionDir)..\Library\x64\Debug"
 
-copy "$(TargetPath)" "$(SolutionDir)..\Library\x64\Debug"</Command>
+copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Debug"</Command>
     </PostBuildEvent>
     <Lib>
       <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -94,7 +94,7 @@ copy "$(TargetPath)" "$(SolutionDir)..\Library\x64\Debug"</Command>
     <PostBuildEvent>
       <Command>mkdir "$(SolutionDir)..\Library\x64\Release"
 
-copy "$(TargetPath)" "$(SolutionDir)..\Library\x64\Release"</Command>
+copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Release"</Command>
     </PostBuildEvent>
     <Lib>
       <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
