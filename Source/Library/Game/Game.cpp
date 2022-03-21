@@ -268,7 +268,6 @@ namespace library
         g_pImmediateContext->ClearRenderTargetView(g_pRenderTargetView.Get(), Colors::MidnightBlue);
         g_pSwapChain->Present(0, 0);
     }
-
     //--------------------------------------------------------------------------------------
     // Clean up the objects we've created
     //--------------------------------------------------------------------------------------
