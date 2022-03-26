@@ -16,10 +16,22 @@
     <Filter Include="소스 파일\Game">
       <UniqueIdentifier>{5e0c0bab-9c2f-4eb6-9ba4-8e5b0b6a8ba8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Window">
+      <UniqueIdentifier>{1bf5fbef-8f8a-448b-bacf-62786457042f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Renderer">
+      <UniqueIdentifier>{b8591bd8-95fb-49ba-b956-f2d66e56c86b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game\Game.cpp">
       <Filter>소스 파일\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Window\MainWindow.cpp">
+      <Filter>소스 파일\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\Renderer.cpp">
+      <Filter>소스 파일\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -31,6 +43,15 @@
     </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>리소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Window\BaseWindow.h">
+      <Filter>소스 파일\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="Window\MainWindow.h">
+      <Filter>소스 파일\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Renderer.h">
+      <Filter>소스 파일\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
