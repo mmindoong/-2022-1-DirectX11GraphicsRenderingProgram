@@ -1,7 +1,7 @@
 /*+===================================================================
   File:      BASEWINDOW.H
 
-  Summary:   BaseWindow header file contains declarations of the 
+  Summary:   BaseWindow header file contains declarations of the
              base class of all windows used in the library.
 
   Classes: BaseWindow<DerivedType>
@@ -24,10 +24,10 @@ namespace library
                 Initialize
                     Purely virtual function that initializes window
                 GetWindowClassName
-                    Purely virtual function that returns the name of 
+                    Purely virtual function that returns the name of
                     the window class
                 HandleMessage
-                    Purely virtual function that that handles the 
+                    Purely virtual function that that handles the
                     messages
                 GetWindow
                     Getter for the handle to the window
@@ -94,24 +94,28 @@ namespace library
         Returns:  LRESULT
                     Integer value that your program returns to Windows
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: BaseWindow<DerivedType>::WindowProc definition (remove the comment)
+    --------------------------------------------------------------------*/
 
-    template <class DerivedType>
+    template<class DerivedType>
+
     LRESULT BaseWindow<DerivedType>::WindowProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam)
     {
         DerivedType* pThis = nullptr;
-    
+
         if (uMsg == WM_NCCREATE)
         {
-            CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
-            pThis = reinterpret_cast<DerivedType*>(pCreate->lpCreateParams);
+            CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*> (lParam);
+            pThis = reinterpret_cast<DerivedType*> (pCreate->lpCreateParams);
             SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));
-
             pThis->m_hWnd = hWnd;
         }
         else
         {
             pThis = reinterpret_cast<DerivedType*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
         }
+
         if (pThis)
         {
             return pThis->HandleMessage(uMsg, wParam, lParam);
@@ -129,10 +133,16 @@ namespace library
 
         Modifies: [m_hInstance, m_hWnd, m_pszWindowName].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: BaseWindow<DerivedType>::BaseWindow definition (remove the comment)
+    --------------------------------------------------------------------*/
 
     template <class DerivedType>
-    BaseWindow<DerivedType>::BaseWindow() : m_hInstance(nullptr), m_hWnd(nullptr), m_pszWindowName(L"TutorialClass") {}
-
+    BaseWindow<DerivedType>::BaseWindow()
+        : m_hInstance(nullptr)
+        , m_hWnd(nullptr)
+        , m_pszWindowName(nullptr)
+    { }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
         Method:   BaseWindow<DerivedType>::GetWindow()
@@ -142,6 +152,9 @@ namespace library
         Returns:  HWND
                     The handle to the window
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: BaseWindow<DerivedType>::GetWindow definition (remove the comment)
+    --------------------------------------------------------------------*/
 
     template <class DerivedType>
     HWND BaseWindow<DerivedType>::GetWindow() const
@@ -175,7 +188,7 @@ namespace library
                   A handle to the parent or owner window of the window
                   being created
                 HMENU hMenu
-                  A handle to a menu, or specifies a child-window 
+                  A handle to a menu, or specifies a child-window
                   identifier depending on the window style
 
       Modifies: [m_hInstance, m_pszWindowName, m_hWnd].
@@ -187,8 +200,7 @@ namespace library
       TODO: BaseWindow<DerivedType>::initialize definition (remove the comment)
     --------------------------------------------------------------------*/
     template <class DerivedType>
-    HRESULT BaseWindow<DerivedType>::initialize(
-        _In_ HINSTANCE hInstance,
+    HRESULT BaseWindow<DerivedType>::initialize(_In_ HINSTANCE hInstance,
         _In_ INT nCmdShow,
         _In_ PCWSTR pszWindowName,
         _In_ DWORD dwStyle,
@@ -197,26 +209,31 @@ namespace library
         _In_opt_ INT nWidth,
         _In_opt_ INT nHeight,
         _In_opt_ HWND hWndParent,
-        _In_opt_ HMENU hMenu
-    )
+        _In_opt_ HMENU hMenu)
     {
-        m_pszWindowName = GetWindowClassName();
+        WNDCLASSEX wcex;
+        wcex.cbSize = sizeof(WNDCLASSEX);
+        wcex.style = CS_HREDRAW | CS_VREDRAW;
+        wcex.lpfnWndProc = DerivedType::WindowProc;
+        wcex.cbClsExtra = 0;
+        wcex.cbWndExtra = 0;
+        wcex.hInstance = hInstance;
+        wcex.hIcon = LoadIcon(hInstance, (LPCTSTR)IDI_TUTORIAL1);
+        wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+        wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+        wcex.lpszMenuName = nullptr;
+        wcex.lpszClassName = GetWindowClassName();
+        wcex.hIconSm = LoadIcon(wcex.hInstance, (LPCTSTR)IDI_TUTORIAL1);
+        if (!RegisterClassEx(&wcex))
+            return E_FAIL;
+
         m_hInstance = hInstance;
-        WNDCLASS wc = { 0 };
+        m_hWnd = CreateWindow(GetWindowClassName(), pszWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, this);
+        if (!m_hWnd)
+            return E_FAIL;
 
-        wc.lpfnWndProc = BaseWindow<DerivedType>::WindowProc;
-        wc.hInstance = GetModuleHandle(NULL);
-        wc.lpszClassName = m_pszWindowName;
+        ShowWindow(m_hWnd, nCmdShow);
 
-        RegisterClass(&wc);
-
-        m_hWnd = CreateWindowEx(0, m_pszWindowName, pszWindowName,
-            WS_OVERLAPPEDWINDOW,
-            x, y, nWidth, nHeight, hWndParent, hMenu, hInstance,
-            this);
-
-        return (m_hWnd ? TRUE : FALSE);
+        return S_OK;
     }
-    
-
 }
