@@ -1,8 +1,4 @@
-#define _WIN32_WINNT 0x600
 #include "Renderer/Renderer.h"
-#include <d3dcompiler.h>
-
-#pragma comment(lib,"d3dcompiler.lib")
 
 namespace library
 {
