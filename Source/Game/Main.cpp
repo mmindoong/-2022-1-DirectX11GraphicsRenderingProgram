@@ -16,6 +16,7 @@
 #include "Game/Game.h"
 #include "Cube/BigCube.h"
 #include "Cube/SmallCube.h"
+#include "Cube//CustomCube.h"
 
 /*F+F+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   Function: wWinMain
@@ -73,6 +74,11 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     {
         return E_FAIL;
     }
+    std::shared_ptr<CustomCube> customCube = std::make_shared<CustomCube>();
+    if (FAILED(game->GetRenderer()->AddRenderable(L"cube3", customCube)))
+    {
+        return E_FAIL;
+    }
 
     if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"cube1", L"MainShader")))
     {
@@ -83,11 +89,19 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     {
         return E_FAIL;
     }
+    if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"cube3", L"MainShader")))
+    {
+        return E_FAIL;
+    }
     if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"cube1", L"MainShader")))
     {
         return E_FAIL;
     }
     if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"cube2", L"MainShader")))
+    {
+        return E_FAIL;
+    }
+    if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"cube3", L"MainShader")))
     {
         return E_FAIL;
     }

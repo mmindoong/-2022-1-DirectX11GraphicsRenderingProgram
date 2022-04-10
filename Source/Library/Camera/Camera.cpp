@@ -131,8 +131,19 @@ namespace library
         m_rotationSpeed = 1.0f * deltaTime;
 
         WCHAR szDebugMessage[64];  // 배열의 크기는 메시지의 길이에 따라 조정하시면 됩니다
+        swprintf_s(szDebugMessage, L"bFront: %u\n", directions.bFront);
+        OutputDebugString(szDebugMessage);
+        swprintf_s(szDebugMessage, L"bBack: %u\n", directions.bBack);
+        OutputDebugString(szDebugMessage);
         swprintf_s(szDebugMessage, L"bLeft: %u\n", directions.bLeft);
         OutputDebugString(szDebugMessage);
+        swprintf_s(szDebugMessage, L"bRight: %u\n", directions.bRight);
+        OutputDebugString(szDebugMessage);
+        swprintf_s(szDebugMessage, L"bDown: %u\n", directions.bDown);
+        OutputDebugString(szDebugMessage);
+        swprintf_s(szDebugMessage, L"bUp: %u\n", directions.bUp);
+        OutputDebugString(szDebugMessage);
+
 
         if (directions.bFront == true)
         {

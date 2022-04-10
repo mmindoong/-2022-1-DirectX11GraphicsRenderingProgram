@@ -120,7 +120,6 @@ namespace library
                     {
                         m_mouseRelativeMovement.X = raw->data.mouse.lLastX;
                         m_mouseRelativeMovement.Y = raw->data.mouse.lLastY;
-                        //mouse.OnMouseMoveRaw(raw->data.mouse.lLastX, raw->data.mouse.lLastY);
                     }
                 }
             }
@@ -132,16 +131,23 @@ namespace library
             {
                 case 0x10: //SHIFT Key
                     m_directions.bDown = true;
+                    break;
                 case 0x20: //SPACE key
                     m_directions.bUp = true;
+                    break;
                 case 0x57: //W key
                     m_directions.bFront = true;
+                    break;
                 case 0x41: //A key
                     m_directions.bLeft = true;
+                    break;
                 case 0x53: //S key
                     m_directions.bBack = true;
+                    break;
                 case 0x44: //D key
                     m_directions.bRight = true;
+                    break;
+         
             }
             //wParam : 가상 키 코드
             return 0;
@@ -152,16 +158,23 @@ namespace library
             {
             case 0x10: //SHIFT Key
                 m_directions.bDown = false;
+                break;
             case 0x20: //SPACE key
                 m_directions.bUp = false;
+                break;
             case 0x57: //W key
                 m_directions.bFront = false;
+                break;
             case 0x41: //A key
                 m_directions.bLeft = false;
+                break;
             case 0x53: //S key
                 m_directions.bBack = false;
+                break;
             case 0x44: //D key
                 m_directions.bRight = false;
+                break;
+           
             }
             return DefWindowProc(m_hWnd, uMsg, wParam, lParam);
         }
