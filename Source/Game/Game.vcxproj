@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="Cube\BaseCube.cpp" />
     <ClCompile Include="Cube\BigCube.cpp" />
+    <ClCompile Include="Cube\CustomCube.cpp" />
     <ClCompile Include="Cube\SmallCube.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
@@ -26,6 +27,7 @@
   <ItemGroup>
     <ClInclude Include="Cube\BaseCube.h" />
     <ClInclude Include="Cube\BigCube.h" />
+    <ClInclude Include="Cube\CustomCube.h" />
     <ClInclude Include="Cube\SmallCube.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

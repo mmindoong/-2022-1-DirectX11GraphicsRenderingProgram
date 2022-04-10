@@ -69,9 +69,7 @@ namespace library
             pVSBlob->GetBufferSize(), m_vertexLayout.GetAddressOf());
         if (FAILED(hr))
             return hr;
-
     }
-
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   VertexShader::GetVertexShader
