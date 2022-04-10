@@ -58,12 +58,53 @@ namespace library
 				  Status code to return to the operating system
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 
+	/*
 	INT Game::Run()
 	{
+		LARGE_INTEGER StartingTime, EndingTime, ElapsedMicroseconds;
+		LARGE_INTEGER Frequency;
+		FLOAT elapsedTime;
 		// Main message loop
 		MSG msg = { 0 };
+		
+		QueryPerformanceFrequency(&Frequency);
+		QueryPerformanceCounter(&StartingTime);
+
+		while (WM_QUIT != msg.message)
+		{
+			
+			if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
+			else
+			{
+				QueryPerformanceCounter(&EndingTime);
+				elapsedTime = (FLOAT)EndingTime.QuadPart - StartingTime.QuadPart;
+				//ElapsedMicroseconds.QuadPart /= Frequency.QuadPart; //micro second -> second∑Œ πŸ≤„¡‹.
+				elapsedTime /= (FLOAT)(Frequency.QuadPart);
+
+				m_renderer->Update(elapsedTime);
+				m_renderer->Render();
+				
+				//ElapsedMicroseconds.QuadPart = EndingTime.QuadPart - StartingTime.QuadPart;
+				//ElapsedMicroseconds.QuadPart *= 1000000; //1. tick -> micro second∑Œ πŸ≤„¡‹.
+				//ElapsedMicroseconds.QuadPart /= Frequency.QuadPart; //micro second -> second∑Œ πŸ≤„¡‹.
+			}
+		}
+		return static_cast<INT>(msg.wParam);
+		*/
 
 
+	INT Game::Run()
+	{
+		LARGE_INTEGER StartingTime, EndingTime, ElapsedMicroseconds;
+		LARGE_INTEGER Frequency;
+		// Main message loop
+		MSG msg = { 0 };
+		QueryPerformanceFrequency(&Frequency);
+		QueryPerformanceCounter(&StartingTime);
 		while (WM_QUIT != msg.message)
 		{
 			if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
@@ -73,10 +114,18 @@ namespace library
 			}
 			else
 			{
+				QueryPerformanceCounter(&EndingTime);
+				ElapsedMicroseconds.QuadPart = EndingTime.QuadPart - StartingTime.QuadPart;
+
+				ElapsedMicroseconds.QuadPart *= 1000000; //1. tick -> micro tick∑Œ πŸ≤„¡‹.
+				ElapsedMicroseconds.QuadPart /= Frequency.QuadPart; //micro tick-> micro second∑Œ πŸ≤„¡‹.
+				QueryPerformanceFrequency(&Frequency);
+				QueryPerformanceCounter(&StartingTime);
+				m_renderer->Update((FLOAT)ElapsedMicroseconds.QuadPart / 1000000.0f);
 				m_renderer->Render();
+				
 			}
 		}
-
 		return static_cast<INT>(msg.wParam);
 
 	}
@@ -92,4 +141,35 @@ namespace library
 
 	PCWSTR Game::GetGameName() const { return m_pszGameName; }
 
+	 /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Game::GetWindow
+
+      Summary:  Returns the main window
+
+      Returns:  std::unique_ptr<MainWindow>&
+                  The main window
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Game::GetWindow definition (remove the comment)
+    --------------------------------------------------------------------*/
+	std::unique_ptr<MainWindow>& Game::GetWindow()
+	{
+		return m_mainWindow;
+	}
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Game::GetRenderer
+
+      Summary:  Returns the renderer
+
+      Returns:  std::unique_ptr<Renderer>&
+                  The renderer
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Game::GetRenderer definition (remove the comment)
+    --------------------------------------------------------------------*/
+	std::unique_ptr<Renderer>& Game::GetRenderer()
+	{
+		return m_renderer;
+	}
 }
