@@ -51,9 +51,25 @@ namespace library
         HRESULT hr = S_OK;
 
         RECT rc;
+        POINT p1, p2;
         GetClientRect(hWnd, &rc);
+
+        p1.x = rc.left;
+        p1.y = rc.top;
+        p2.x = rc.right;
+        p2.y = rc.bottom;
+
+        ClientToScreen(hWnd, &p1);
+        ClientToScreen(hWnd, &p2);
+
+        rc.left = p1.x;
+        rc.top = p1.y;
+        rc.right = p2.x;
+        rc.bottom = p2.y;
         UINT width = rc.right - rc.left;
         UINT height = rc.bottom - rc.top;
+
+        ClipCursor(&rc);
 
         UINT createDeviceFlags = 0;
 #ifdef _DEBUG
@@ -365,9 +381,6 @@ namespace library
 
       Modifies: [m_camera].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::HandleInput definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Renderer::HandleInput(_In_ const DirectionsInput& directions, _In_ const MouseRelativeMovement& mouseRelativeMovement, _In_ FLOAT deltaTime)
     {
         // The only object to handle input is the camera object

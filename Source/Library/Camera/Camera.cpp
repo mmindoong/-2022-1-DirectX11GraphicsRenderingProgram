@@ -12,9 +12,6 @@ namespace library
                  m_padding, m_cameraForward, m_cameraRight, m_cameraUp, 
                  m_eye, m_at, m_up, m_rotation, m_view].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Camera::Camera definition (remove the comment)
-    --------------------------------------------------------------------*/
     Camera::Camera(_In_ const XMVECTOR& position)
     {
         m_yaw = 0.0f;
@@ -49,9 +46,6 @@ namespace library
       Returns:  const XMVECTOR&
                   The eye vector
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Camera::GetEye definition (remove the comment)
-    --------------------------------------------------------------------*/
     const XMVECTOR& Camera::GetEye() const
     {
         return m_eye;
@@ -65,9 +59,6 @@ namespace library
       Returns:  const XMVECTOR&
                   The at vector
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Camera::GetAt definition (remove the comment)
-    --------------------------------------------------------------------*/
     const XMVECTOR& Camera::GetAt() const
     {
         return m_at;
@@ -81,9 +72,6 @@ namespace library
       Returns:  const XMVECTOR&
                   The up vector
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Camera::GetUp definition (remove the comment)
-    --------------------------------------------------------------------*/
     const XMVECTOR& Camera::GetUp() const
     {
         return m_up;
@@ -97,9 +85,6 @@ namespace library
       Returns:  const XMMATRIX&
                   The view matrix
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Camera::GetView definition (remove the comment)
-    --------------------------------------------------------------------*/
     const XMMATRIX& Camera::GetView() const
     {
         return m_view;
@@ -120,59 +105,35 @@ namespace library
       Modifies: [m_yaw, m_pitch, m_moveLeftRight, m_moveBackForward,
                  m_moveUpDown].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Camera::HandleInput definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Camera::HandleInput(_In_ const DirectionsInput& directions,
         _In_ const MouseRelativeMovement & mouseRelativeMovement, 
         _In_ FLOAT deltaTime)
     {
         m_travelSpeed = 15.0f * deltaTime;
-        m_rotationSpeed = 1.0f * deltaTime;
-
-        WCHAR szDebugMessage[64];  // 배열의 크기는 메시지의 길이에 따라 조정하시면 됩니다
-        swprintf_s(szDebugMessage, L"bFront: %u\n", directions.bFront);
-        OutputDebugString(szDebugMessage);
-        swprintf_s(szDebugMessage, L"bBack: %u\n", directions.bBack);
-        OutputDebugString(szDebugMessage);
-        swprintf_s(szDebugMessage, L"bLeft: %u\n", directions.bLeft);
-        OutputDebugString(szDebugMessage);
-        swprintf_s(szDebugMessage, L"bRight: %u\n", directions.bRight);
-        OutputDebugString(szDebugMessage);
-        swprintf_s(szDebugMessage, L"bDown: %u\n", directions.bDown);
-        OutputDebugString(szDebugMessage);
-        swprintf_s(szDebugMessage, L"bUp: %u\n", directions.bUp);
-        OutputDebugString(szDebugMessage);
-
+        m_rotationSpeed = 15.0f * deltaTime;
 
         if (directions.bFront == true)
         {
-            OutputDebugString(L"bFront\n");
             m_moveBackForward += m_travelSpeed;
         }
         if (directions.bBack == true)
         {
-            OutputDebugString(L"bBack\n");
             m_moveBackForward -= m_travelSpeed;
         }
         if (directions.bLeft == true)
         {
-            OutputDebugString(L"bLeft\n");
             m_moveLeftRight -= m_travelSpeed;
         }
         if (directions.bRight == true)
         {
-            OutputDebugString(L"bRight\n");
             m_moveLeftRight += m_travelSpeed;
         }
         if (directions.bUp == true)
         {
-            OutputDebugString(L"bUp\n");
             m_moveUpDown += m_travelSpeed;
         }
         if (directions.bDown == true)
         {
-            OutputDebugString(L"bDown\n");
             m_moveUpDown -= m_travelSpeed;
         }
 
@@ -180,6 +141,7 @@ namespace library
         {
             m_yaw += mouseLastState.X * m_rotationSpeed;
             m_pitch += mouseLastState.Y * m_rotationSpeed;
+            
             mouseLastState = mouseRelativeMovement;
         }
         Update(deltaTime);
@@ -197,9 +159,6 @@ namespace library
                  m_cameraForward, m_eye, m_moveLeftRight, 
                  m_moveBackForward, m_moveUpDown, m_up, m_view].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Camera::Update definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Camera::Update(_In_ FLOAT deltaTime)
     {
         m_rotation = XMMatrixRotationRollPitchYaw(m_pitch, m_yaw, 0);

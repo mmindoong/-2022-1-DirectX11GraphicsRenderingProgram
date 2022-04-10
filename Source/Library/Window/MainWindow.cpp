@@ -193,9 +193,6 @@ namespace library
      Returns:  const DirectionsInput&
                  Keyboard direction input
    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-   /*--------------------------------------------------------------------
-     TODO: MainWindow::GetDirections definition (remove the comment)
-   --------------------------------------------------------------------*/
     const DirectionsInput& MainWindow::GetDirections() const
     {
         return m_directions;
@@ -209,9 +206,6 @@ namespace library
      Returns:  const MouseRelativeMovement&
                  Mouse relative movement
    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-   /*--------------------------------------------------------------------
-     TODO: MainWindow::GetMouseRelativeMovement definition (remove the comment)
-   --------------------------------------------------------------------*/
     const MouseRelativeMovement& MainWindow::GetMouseRelativeMovement() const
     {
         return m_mouseRelativeMovement;
@@ -222,9 +216,6 @@ namespace library
 
      Summary:  Reset the mouse relative movement to zero
    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-   /*--------------------------------------------------------------------
-     TODO: MainWindow::ResetMouseMovement definition (remove the comment)
-   --------------------------------------------------------------------*/
     void MainWindow::ResetMouseMovement()
     {
         m_mouseRelativeMovement.X = 0;
