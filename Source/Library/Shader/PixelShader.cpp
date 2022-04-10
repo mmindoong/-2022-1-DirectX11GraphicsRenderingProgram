@@ -18,9 +18,6 @@ namespace library
 
       Modifies: [m_pixelShader].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: PixelShader::PixelShader definition (remove the comment)
-    --------------------------------------------------------------------*/
     PixelShader::PixelShader(_In_ PCWSTR pszFileName, _In_ PCSTR pszEntryPoint, _In_ PCSTR pszShaderModel)
         : Shader(_In_ pszFileName, _In_ pszEntryPoint, _In_ pszShaderModel)
     {
@@ -38,9 +35,6 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: PixelShader::Initialize definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT PixelShader::Initialize(_In_ ID3D11Device* pDevice)
     {
         HRESULT hr = S_OK;
@@ -70,9 +64,6 @@ namespace library
       Returns:  ComPtr<ID3D11PixelShader>&
                   Pixel shader. Could be a nullptr
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: PixelShader::GetPixelShader definition (remove the comment)
-    --------------------------------------------------------------------*/
     ComPtr<ID3D11PixelShader>& PixelShader::GetPixelShader()
     {
         return m_pixelShader;

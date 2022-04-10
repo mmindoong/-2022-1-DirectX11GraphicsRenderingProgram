@@ -18,9 +18,6 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::initialize definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Renderable::initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext)
     {
         HRESULT hr = S_OK;
@@ -75,9 +72,6 @@ namespace library
 
       Modifies: [m_vertexShader].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::SetVertexShader definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Renderable::SetVertexShader(_In_ const std::shared_ptr<VertexShader>& vertexShader)
     {
         m_vertexShader = vertexShader;
@@ -94,9 +88,6 @@ namespace library
 
       Modifies: [m_pixelShader].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::SetPixelShader definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Renderable::SetPixelShader(_In_ const std::shared_ptr<PixelShader>& pixelShader)
     {
         m_pixelShader = pixelShader;
@@ -111,9 +102,6 @@ namespace library
       Returns:  ComPtr<ID3D11VertexShader>&
                   Vertex shader. Could be a nullptr
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::GetVertexShader definition (remove the comment)
-    --------------------------------------------------------------------*/
     ComPtr<ID3D11VertexShader>& Renderable::GetVertexShader()
     {
         return m_vertexShader->GetVertexShader();
@@ -127,9 +115,6 @@ namespace library
       Returns:  ComPtr<ID3D11PixelShader>&
                   Pixel shader. Could be a nullptr
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::GetPixelShader definition (remove the comment)
-    --------------------------------------------------------------------*/
     ComPtr<ID3D11PixelShader>& Renderable::GetPixelShader()
     {
         return m_pixelShader->GetPixelShader();
@@ -144,9 +129,6 @@ namespace library
       Returns:  ComPtr<ID3D11InputLayout>&
                   Vertex input layout
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::GetVertexLayout definition (remove the comment)
-    --------------------------------------------------------------------*/
     ComPtr<ID3D11InputLayout>& Renderable::GetVertexLayout()
     {
         return m_vertexShader->GetVertexLayout();
@@ -161,9 +143,6 @@ namespace library
       Returns:  ComPtr<ID3D11Buffer>&
                   Vertex buffer
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::GetVertexBuffer definition (remove the comment)
-    --------------------------------------------------------------------*/
     ComPtr<ID3D11Buffer>& Renderable::GetVertexBuffer()
     {
         return m_vertexBuffer;
@@ -177,9 +156,6 @@ namespace library
       Returns:  ComPtr<ID3D11Buffer>&
                   Index buffer
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::GetIndexBuffer definition (remove the comment)
-    --------------------------------------------------------------------*/
     ComPtr<ID3D11Buffer>& Renderable::GetIndexBuffer()
     {
         return m_indexBuffer;
@@ -193,9 +169,6 @@ namespace library
       Returns:  ComPtr<ID3D11Buffer>&
                   Constant buffer
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::GetConstantBuffer definition (remove the comment)
-    --------------------------------------------------------------------*/
     ComPtr<ID3D11Buffer>& Renderable::GetConstantBuffer()
     {
         return m_constantBuffer;
@@ -209,9 +182,6 @@ namespace library
       Returns:  const XMMATRIX&
                   World matrix
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::GetWorldMatrix definition (remove the comment)
-    --------------------------------------------------------------------*/
     const XMMATRIX& Renderable::GetWorldMatrix() const
     {
         return m_world;

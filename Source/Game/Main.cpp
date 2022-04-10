@@ -13,9 +13,6 @@
 
 #include <memory>
 
-/*--------------------------------------------------------------------
-  TODO: Include custom cubes (remove the comment)
---------------------------------------------------------------------*/
 #include "Game/Game.h"
 #include "Cube/BigCube.h"
 #include "Cube/SmallCube.h"
@@ -65,26 +62,36 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 0;
     }
 
-    /*--------------------------------------------------------------------
-      TODO: Add your cubes and set their shaders (remove the comment)
-    --------------------------------------------------------------------*/
+
     std::shared_ptr<BigCube> bigCube = std::make_shared<BigCube>();
     if (FAILED(game->GetRenderer()->AddRenderable(L"cube1", bigCube)))
     {
-        return 0;
+        return E_FAIL;
     }
     std::shared_ptr<SmallCube> smallCube = std::make_shared<SmallCube>();
-    if (FAILED(game->GetRenderer()->AddRenderable(L"cube", smallCube)))
+    if (FAILED(game->GetRenderer()->AddRenderable(L"cube2", smallCube)))
     {
-        return 0;
+        return E_FAIL;
     }
-    bigCube->SetVertexShader(vertexShader);
-    smallCube->SetVertexShader(vertexShader);
-    bigCube->SetPixelShader(pixelShader);
-    smallCube->SetPixelShader(pixelShader);
-    /*Renderer -> 그림 그리는 것, Rednderable -> 그림 그려지는 ,, 정보들 담아진 곳.*/
-    //game->GetRenderer()->SetVertexShaderOfRenderable(L"cube1", L"MainShader");
-    //game->GetRenderer()->SetVertexShaderOfRenderable()
+
+    if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"cube1", L"MainShader")))
+    {
+        return E_FAIL;
+    }
+   
+    if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"cube2", L"MainShader")))
+    {
+        return E_FAIL;
+    }
+    if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"cube1", L"MainShader")))
+    {
+        return E_FAIL;
+    }
+    if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"cube2", L"MainShader")))
+    {
+        return E_FAIL;
+    }
+
     if (FAILED(game->Initialize(hInstance, nCmdShow)))
     {
         return 0;
