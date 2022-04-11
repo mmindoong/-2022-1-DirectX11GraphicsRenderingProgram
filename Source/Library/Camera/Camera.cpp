@@ -110,7 +110,7 @@ namespace library
         _In_ FLOAT deltaTime)
     {
         m_travelSpeed = 15.0f * deltaTime;
-        m_rotationSpeed = 15.0f * deltaTime;
+        m_rotationSpeed = 10.0f * deltaTime;
 
         if (directions.bFront == true)
         {
@@ -136,13 +136,18 @@ namespace library
         {
             m_moveUpDown -= m_travelSpeed;
         }
-
         if (mouseRelativeMovement.X != mouseLastState.X || mouseRelativeMovement.Y != mouseLastState.Y)
         {
             m_yaw += mouseLastState.X * m_rotationSpeed;
             m_pitch += mouseLastState.Y * m_rotationSpeed;
-            
+
             mouseLastState = mouseRelativeMovement;
+
+            if (m_pitch < -XM_PIDIV2)
+                m_pitch = -XM_PIDIV2;
+            else if(m_pitch > XM_PIDIV2 )
+                m_pitch = XM_PIDIV2;
+
         }
         Update(deltaTime);
     }

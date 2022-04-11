@@ -94,35 +94,27 @@ namespace library
         case WM_DESTROY:
             PostQuitMessage(0);
             break;
-
-            // Note that this tutorial does not handle resizing (WM_SIZE) requests,
-            // so we created the window without the resize border.
+        
         case WM_INPUT:
         {
-            UINT dataSize;
-            GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), 
-                RID_INPUT, 
-                NULL, 
-                &dataSize,
-                sizeof(RAWINPUTHEADER)); //Need to populate data size first
+            UINT dwSize = sizeof(RAWINPUT);
+            static BYTE lpb[sizeof(RAWINPUT)];
 
-            if (dataSize > 0)
+            GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), 
+                            RID_INPUT, 
+                            lpb, &dwSize, 
+                            sizeof(RAWINPUTHEADER));
+
+            if (dwSize > 0)
             {
-                std::unique_ptr<BYTE[]> rawdata = std::make_unique<BYTE[]>(dataSize);
-                if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), 
-                                    RID_INPUT, 
-                                    rawdata.get(), 
-                                    &dataSize, 
-                                    sizeof(RAWINPUTHEADER)) == dataSize)
+                RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(lpb);
+                if (raw->header.dwType == RIM_TYPEMOUSE)
                 {
-                    RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(rawdata.get());
-                    if (raw->header.dwType == RIM_TYPEMOUSE)
-                    {
-                        m_mouseRelativeMovement.X = raw->data.mouse.lLastX;
-                        m_mouseRelativeMovement.Y = raw->data.mouse.lLastY;
-                    }
+                    m_mouseRelativeMovement.X = raw->data.mouse.lLastX;
+                    m_mouseRelativeMovement.Y = raw->data.mouse.lLastY;
                 }
             }
+            return DefWindowProc(m_hWnd, uMsg, wParam, lParam); //Need to call DefWindowProc for WM_INPUT messages
         }
         //Keyboard Message
         case WM_KEYDOWN:
@@ -147,7 +139,6 @@ namespace library
                 case 0x44: //D key
                     m_directions.bRight = true;
                     break;
-         
             }
             //wParam : 가상 키 코드
             return 0;
@@ -176,7 +167,7 @@ namespace library
                 break;
            
             }
-            return DefWindowProc(m_hWnd, uMsg, wParam, lParam);
+            return 0;
         }
         default:
             return DefWindowProc(m_hWnd, uMsg, wParam, lParam);

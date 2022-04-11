@@ -44,8 +44,6 @@ namespace library
 			return 0;
 		if (FAILED(m_renderer->Initialize(m_mainWindow->GetWindow())))
 			return 0;
-		OutputDebugString(L"Initialize Success\n");
-
 		
 	}
 
