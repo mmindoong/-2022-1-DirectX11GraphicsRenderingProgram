@@ -24,6 +24,7 @@ namespace library
         m_vertexShader = nullptr;
     }
 
+
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   VertexShader::Initialize
 
