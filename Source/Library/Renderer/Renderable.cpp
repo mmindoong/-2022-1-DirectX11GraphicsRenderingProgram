@@ -99,6 +99,7 @@ namespace library
 
         // Initialize the world matrix
         m_world = XMMatrixIdentity();
+        return S_OK;
     }
 
 
