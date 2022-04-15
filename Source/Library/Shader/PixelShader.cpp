@@ -54,6 +54,8 @@ namespace library
         if (FAILED(hr))
             return hr;
 
+        return hr;
+
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M

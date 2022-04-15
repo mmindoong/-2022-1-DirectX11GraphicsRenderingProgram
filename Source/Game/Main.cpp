@@ -68,44 +68,44 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     std::shared_ptr<BigCube> bigCube = std::make_shared<BigCube>(p);
     if (FAILED(game->GetRenderer()->AddRenderable(L"cube1", bigCube)))
     {
-        return E_FAIL;
+        return 0;
     }
 
     std::shared_ptr<SmallCube> smallCube = std::make_shared<SmallCube>(p1);
     if (FAILED(game->GetRenderer()->AddRenderable(L"cube2", smallCube)))
     {
-        return E_FAIL;
+        return 0;
     }
     std::shared_ptr<CustomCube> customCube = std::make_shared<CustomCube>(p1);
     if (FAILED(game->GetRenderer()->AddRenderable(L"cube3", customCube)))
     {
-        return E_FAIL;
+        return 0;
     }
 
     if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"cube1", L"MainShader")))
     {
-        return E_FAIL;
+        return 0;
     }
    
     if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"cube2", L"MainShader")))
     {
-        return E_FAIL;
+        return 0;
     }
     if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"cube3", L"MainShader")))
     {
-        return E_FAIL;
+        return 0;
     }
     if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"cube1", L"MainShader")))
     {
-        return E_FAIL;
+        return 0;
     }
     if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"cube2", L"MainShader")))
     {
-        return E_FAIL;
+        return 0;
     }
     if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"cube3", L"MainShader")))
     {
-        return E_FAIL;
+        return 0;
     }
 
     if (FAILED(game->Initialize(hInstance, nCmdShow)))

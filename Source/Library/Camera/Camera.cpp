@@ -159,11 +159,6 @@ namespace library
 
             mouseLastState = mouseRelativeMovement;
 
-            if (m_pitch < -XM_PIDIV2)
-                m_pitch = -XM_PIDIV2;
-            else if (m_pitch > XM_PIDIV2)
-                m_pitch = XM_PIDIV2;
-
         }
         Update(deltaTime);
     }
@@ -196,6 +191,8 @@ namespace library
         hr = device->CreateBuffer(&bd, nullptr, m_cbChangeOnCameraMovement.GetAddressOf());
         if (FAILED(hr))
             return hr;
+
+        return hr;
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
