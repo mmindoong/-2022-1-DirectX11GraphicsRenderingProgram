@@ -8,8 +8,8 @@ namespace library
       Summary:  Constructor
 
       Modifies: [m_yaw, m_pitch, m_moveLeftRight, m_moveBackForward,
-                 m_moveUpDown, m_travelSpeed, m_rotationSpeed, 
-                 m_padding, m_cameraForward, m_cameraRight, m_cameraUp, 
+                 m_moveUpDown, m_travelSpeed, m_rotationSpeed,
+                 m_padding, m_cameraForward, m_cameraRight, m_cameraUp,
                  m_eye, m_at, m_up, m_rotation, m_view].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     Camera::Camera(_In_ const XMVECTOR& position)
@@ -21,9 +21,6 @@ namespace library
         m_moveBackForward = 0.0f;
         m_moveUpDown = 0.0f;
 
-        m_travelSpeed = 0.0f;
-        m_rotationSpeed = 0.0f;
-
         m_cameraForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
         m_cameraRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
         m_cameraUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
@@ -33,9 +30,11 @@ namespace library
         m_up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
         m_view = XMMatrixLookAtLH(m_eye, m_at, m_up);
 
+        m_travelSpeed = 0.0f;
+        m_rotationSpeed = 0.0f;
         mouseLastState.X = 0.0f;
         mouseLastState.Y = 0.0f;
-        
+
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -91,6 +90,23 @@ namespace library
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Camera::GetConstantBuffer
+
+      Summary:  Returns the constant buffer
+
+      Returns:  ComPtr<ID3D11Buffer>&
+                  The constant buffer
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Camera::GetConstantBuffer definition (remove the comment)
+    --------------------------------------------------------------------*/
+    ComPtr<ID3D11Buffer>& Camera::GetConstantBuffer()
+    {
+        return m_cbChangeOnCameraMovement;
+    }
+
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   Camera::HandleInput
 
       Summary:  Sets the camera state according to the given input
@@ -106,7 +122,7 @@ namespace library
                  m_moveUpDown].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     void Camera::HandleInput(_In_ const DirectionsInput& directions,
-        _In_ const MouseRelativeMovement & mouseRelativeMovement, 
+        _In_ const MouseRelativeMovement& mouseRelativeMovement,
         _In_ FLOAT deltaTime)
     {
         m_travelSpeed = 15.0f * deltaTime;
@@ -145,11 +161,41 @@ namespace library
 
             if (m_pitch < -XM_PIDIV2)
                 m_pitch = -XM_PIDIV2;
-            else if(m_pitch > XM_PIDIV2 )
+            else if (m_pitch > XM_PIDIV2)
                 m_pitch = XM_PIDIV2;
 
         }
         Update(deltaTime);
+    }
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Camera::Initialize
+
+      Summary:  Initialize the view matrix constant buffers
+
+      Args:     ID3D11Device* pDevice
+                  Pointer to a Direct3D 11 device
+
+      Modifies: [m_cbChangeOnCameraMovement].
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Camera::Initialize definition (remove the comment)
+    --------------------------------------------------------------------*/
+    HRESULT Camera::Initialize(_In_ ID3D11Device* device)
+    {
+        HRESULT hr = S_OK;
+
+        //Create the view matrix constant buffers : CBChangeOnCameraMovement
+        D3D11_BUFFER_DESC bd = {};
+        bd.Usage = D3D11_USAGE_DEFAULT;
+        bd.ByteWidth = sizeof(CBChangeOnCameraMovement);
+        bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        bd.CPUAccessFlags = 0;
+        bd.MiscFlags = 0;
+        bd.StructureByteStride = 0;
+        hr = device->CreateBuffer(&bd, nullptr, m_cbChangeOnCameraMovement.GetAddressOf());
+        if (FAILED(hr))
+            return hr;
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -160,8 +206,8 @@ namespace library
       Args:     FLOAT deltaTime
                   Time difference of a frame
 
-      Modifies: [m_rotation, m_at, m_cameraRight, m_cameraUp, 
-                 m_cameraForward, m_eye, m_moveLeftRight, 
+      Modifies: [m_rotation, m_at, m_cameraRight, m_cameraUp,
+                 m_cameraForward, m_eye, m_moveLeftRight,
                  m_moveBackForward, m_moveUpDown, m_up, m_view].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     void Camera::Update(_In_ FLOAT deltaTime)
@@ -185,7 +231,7 @@ namespace library
         m_moveBackForward = 0.0f;
         m_moveUpDown = 0.0f;
 
-        m_at = m_eye + m_at ;
+        m_at = m_eye + m_at;
 
         m_view = XMMatrixLookAtLH(m_eye, m_at, m_cameraUp);
     }

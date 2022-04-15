@@ -19,7 +19,7 @@ namespace library
       Modifies: [m_vertexShader].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     VertexShader::VertexShader(_In_ PCWSTR pszFileName, _In_ PCSTR pszEntryPoint, _In_ PCSTR pszShaderModel)
-        : Shader(_In_ pszFileName, _In_ pszEntryPoint, _In_ pszShaderModel)
+        : Shader(pszFileName, pszEntryPoint, pszShaderModel)
     {
         m_vertexShader = nullptr;
     }
@@ -61,7 +61,8 @@ namespace library
         // Define the input layout, Vertex position in object space.
         D3D11_INPUT_ELEMENT_DESC layout[] =
         {
-            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+               { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+               { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         };
         UINT numElements = ARRAYSIZE(layout);
 

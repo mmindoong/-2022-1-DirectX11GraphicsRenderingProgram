@@ -9,6 +9,7 @@
 class CustomCube : public BaseCube
 {
 public:
+	CustomCube(const std::filesystem::path& textureFilePath);
 	CustomCube() = default;
 	~CustomCube() = default;
 

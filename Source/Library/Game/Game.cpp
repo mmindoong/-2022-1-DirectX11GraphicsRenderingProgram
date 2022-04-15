@@ -40,10 +40,13 @@ namespace library
 
 	HRESULT Game::Initialize(_In_ HINSTANCE hInstance, _In_ INT nCmdShow)
 	{
-		if (FAILED(m_mainWindow->Initialize(hInstance, nCmdShow, m_pszGameName)))
-			return 0;
-		if (FAILED(m_renderer->Initialize(m_mainWindow->GetWindow())))
-			return 0;
+		HRESULT hr = S_OK;
+		hr = m_mainWindow->Initialize(hInstance, nCmdShow, m_pszGameName);
+		if (FAILED(hr))
+			return hr;
+		hr = m_renderer->Initialize(m_mainWindow->GetWindow());
+		if (FAILED(hr))
+			return hr;
 		
 	}
 
@@ -74,7 +77,7 @@ namespace library
 			{
 				QueryPerformanceCounter(&EndingTime);
 				ElapsedMicroseconds.QuadPart = EndingTime.QuadPart - StartingTime.QuadPart;
-
+	
 				ElapsedMicroseconds.QuadPart *= 1000000; //1. tick -> micro tick∑Œ πŸ≤„¡‹.
 				ElapsedMicroseconds.QuadPart /= Frequency.QuadPart; //micro tick-> micro second∑Œ πŸ≤„¡‹.
 				QueryPerformanceFrequency(&Frequency);

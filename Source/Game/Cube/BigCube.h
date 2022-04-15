@@ -9,6 +9,7 @@
 class BigCube : public BaseCube
 {
 public:
+	BigCube(const std::filesystem::path& textureFilePath);
 	BigCube() = default;
 	~BigCube() = default;
 

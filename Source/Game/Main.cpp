@@ -63,18 +63,20 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 0;
     }
 
-
-    std::shared_ptr<BigCube> bigCube = std::make_shared<BigCube>();
+    std::filesystem::path p("./seafloor.dds");
+    std::filesystem::path p1("./brick.dds");
+    std::shared_ptr<BigCube> bigCube = std::make_shared<BigCube>(p);
     if (FAILED(game->GetRenderer()->AddRenderable(L"cube1", bigCube)))
     {
         return E_FAIL;
     }
-    std::shared_ptr<SmallCube> smallCube = std::make_shared<SmallCube>();
+
+    std::shared_ptr<SmallCube> smallCube = std::make_shared<SmallCube>(p1);
     if (FAILED(game->GetRenderer()->AddRenderable(L"cube2", smallCube)))
     {
         return E_FAIL;
     }
-    std::shared_ptr<CustomCube> customCube = std::make_shared<CustomCube>();
+    std::shared_ptr<CustomCube> customCube = std::make_shared<CustomCube>(p1);
     if (FAILED(game->GetRenderer()->AddRenderable(L"cube3", customCube)))
     {
         return E_FAIL;

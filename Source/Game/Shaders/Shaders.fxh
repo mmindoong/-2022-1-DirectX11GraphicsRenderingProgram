@@ -13,12 +13,23 @@
 
   Summary:  Constant buffer used for space transformations
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-cbuffer ConstantBuffer : register(b0)
+Texture2D txDiffuse : register(t0);
+SamplerState samLinear : register(s0);
+
+cbuffer cbNeverChanges : register( b0 )
+{
+    matrix View;
+};
+
+cbuffer cbChangeOnResize : register( b1 )
+{
+    matrix Projection;
+};
+
+cbuffer cbChangesEveryFrame : register( b2 )
 {
     matrix World;
-    matrix View;
-    matrix Projection;
-}
+};
 
 //--------------------------------------------------------------------------------------
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
@@ -29,6 +40,7 @@ C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 struct VS_INPUT
 {
     float4 Pos : POSITION;
+    float2 TexCoord : TEXCOORD;
 };
 
 
@@ -42,6 +54,7 @@ C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 struct PS_INPUT
 {
     float4 Pos : SV_POSITION;
+    float2 TexCoord : TEXCOORD;
 };
 
 
@@ -54,6 +67,7 @@ PS_INPUT VS( VS_INPUT input )
     output.Pos = mul( input.Pos, World );
     output.Pos = mul( output.Pos, View );
     output.Pos = mul( output.Pos, Projection );
+    output.TexCoord = input.TexCoord;
     
     return output;
 }
@@ -63,5 +77,5 @@ PS_INPUT VS( VS_INPUT input )
 //--------------------------------------------------------------------------------------
 float4 PS( PS_INPUT input ) : SV_Target
 {
-    return float4( 1.0f, 0.0f, 0.0f, 1.0f );  
+    return txDiffuse.Sample(samLinear, input.TexCoord);
 }

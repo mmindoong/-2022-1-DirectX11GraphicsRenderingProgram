@@ -9,6 +9,7 @@
 class SmallCube : public BaseCube
 {
 public:
+	SmallCube(const std::filesystem::path& textureFilePath);
 	SmallCube() = default;
 	~SmallCube() = default;
 

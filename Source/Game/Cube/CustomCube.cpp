@@ -1,5 +1,8 @@
 #include "Cube/CustomCube.h"
 
+CustomCube::CustomCube(const std::filesystem::path& textureFilePath)
+	:BaseCube(textureFilePath) {}
+
 void CustomCube::Update(_In_ FLOAT deltaTime)
 {
 	XMMATRIX mTranslate = XMMatrixTranslation(-4.0f, 0.0f, 0.0f);

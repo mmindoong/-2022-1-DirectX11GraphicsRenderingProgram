@@ -1,5 +1,8 @@
 #include "Cube/SmallCube.h"
 
+SmallCube::SmallCube(const std::filesystem::path& textureFilePath)
+	:BaseCube(textureFilePath) {}
+
 void SmallCube::Update(_In_ FLOAT deltaTime)
 {
 	XMMATRIX mTranslate = XMMatrixTranslation(-4.0f, 0.0f, 0.0f);

@@ -7,7 +7,7 @@
 
   Classes: Cube
 
-  � 2022 Kyung Hee University
+  © 2022 Kyung Hee University
 ===================================================================+*/
 #pragma once
 
@@ -15,15 +15,13 @@
 
 #include "Renderer/DataTypes.h"
 
-
-
 namespace library
 {
     /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
       Class:    Camera
 
-      Summary:  Immitates a camera that moves according to the WASD and 
-              mouse input.
+      Summary:  Immitates a camera that moves according to the WASD and
+                mouse input.
 
       Methods:  GetEye
                   Getter for the eye vector
@@ -33,8 +31,12 @@ namespace library
                   Getter for the up vector
                 GetView
                   Getter for the view transform matrix
+                GetConstantBuffer
+                  Get the constant buffer containing the view transform
                 HandleInput
                   Handles the keyboard / mouse input
+                Initialize
+                  Initialize the view matrix constant buffers
                 Update
                   Update the camera according to the input
                 Camera
@@ -57,14 +59,17 @@ namespace library
         const XMVECTOR& GetAt() const;
         const XMVECTOR& GetUp() const;
         const XMMATRIX& GetView() const;
+        ComPtr<ID3D11Buffer>& GetConstantBuffer();
 
         virtual void HandleInput(_In_ const DirectionsInput& directions, _In_ const MouseRelativeMovement& mouseRelativeMovement, _In_ FLOAT deltaTime);
+        virtual HRESULT Initialize(_In_ ID3D11Device* device);
         virtual void Update(_In_ FLOAT deltaTime);
-
     protected:
         static constexpr const XMVECTORF32 DEFAULT_FORWARD = { 0.0f, 0.0f, 1.0f, 0.0f };
         static constexpr const XMVECTORF32 DEFAULT_RIGHT = { 1.0f, 0.0f, 0.0f, 0.0f };
         static constexpr const XMVECTORF32 DEFAULT_UP = { 0.0f, 1.0f, 0.0f, 0.0f };
+
+        ComPtr<ID3D11Buffer> m_cbChangeOnCameraMovement;
 
         FLOAT m_yaw;
         FLOAT m_pitch;
@@ -73,10 +78,10 @@ namespace library
         FLOAT m_moveBackForward;
         FLOAT m_moveUpDown;
 
-        FLOAT m_travelSpeed; //keyboard input
-        FLOAT m_rotationSpeed; //rotation input
+        FLOAT m_travelSpeed;
+        FLOAT m_rotationSpeed;
 
-        DWORD m_padding;
+        BYTE m_padding[12]; // struct alignment
 
         XMVECTOR m_cameraForward;
         XMVECTOR m_cameraRight;

@@ -28,6 +28,9 @@
     <Filter Include="소스 파일\Camera">
       <UniqueIdentifier>{435e4f3c-83db-433b-99a2-4d0abc1fad70}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Texture">
+      <UniqueIdentifier>{97bcde8e-6f12-48fa-b677-2cede6ff3101}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Renderer\Renderable.cpp">
@@ -53,6 +56,9 @@
     </ClCompile>
     <ClCompile Include="Camera\Camera.cpp">
       <Filter>소스 파일\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture\DDSTextureLoader.cpp">
+      <Filter>소스 파일\Texture</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -91,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="Camera\Camera.h">
       <Filter>소스 파일\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture\DDSTextureLoader.h">
+      <Filter>소스 파일\Texture</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
