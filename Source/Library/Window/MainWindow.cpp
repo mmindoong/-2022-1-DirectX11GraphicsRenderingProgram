@@ -24,6 +24,7 @@ namespace library
         RECT rc = { 0, 0, 800, 600 };
         AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
+
         HRESULT hr = initialize(hInstance, nCmdShow, pszWindowName, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr);
         if (FAILED(hr))
         {
@@ -97,6 +98,30 @@ namespace library
         
         case WM_INPUT:
         {
+
+            RECT rc;
+            POINT p1, p2;
+            RECT rc1;
+          
+            GetClientRect(m_hWnd, &rc);
+
+            p1.x = rc.left;
+            p1.y = rc.top;
+            p2.x = rc.right;
+            p2.y = rc.bottom;
+
+            ClientToScreen(m_hWnd, &p1);
+            ClientToScreen(m_hWnd, &p2);
+
+            GetWindowRect(m_hWnd, &rc1);
+
+            rc.left = p1.x;
+            rc.top = rc1.top;
+            rc.right = p2.x;
+            rc.bottom = p2.y;
+
+            ClipCursor(&rc);
+
             UINT dwSize = sizeof(RAWINPUT);
             static BYTE lpb[sizeof(RAWINPUT)];
 

@@ -31,6 +31,9 @@
     <Filter Include="소스 파일\Texture">
       <UniqueIdentifier>{97bcde8e-6f12-48fa-b677-2cede6ff3101}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Light">
+      <UniqueIdentifier>{a1482162-da01-4012-aaf8-495175f7410b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Renderer\Renderable.cpp">
@@ -59,6 +62,9 @@
     </ClCompile>
     <ClCompile Include="Texture\DDSTextureLoader.cpp">
       <Filter>소스 파일\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Light\PointLight.cpp">
+      <Filter>소스 파일\Light</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -100,6 +106,9 @@
     </ClInclude>
     <ClInclude Include="Texture\DDSTextureLoader.h">
       <Filter>소스 파일\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Light\PointLight.h">
+      <Filter>소스 파일\Light</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

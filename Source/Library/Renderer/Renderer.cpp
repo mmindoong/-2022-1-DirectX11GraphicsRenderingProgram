@@ -51,25 +51,11 @@ namespace library
         HRESULT hr = S_OK;
 
         RECT rc;
-        POINT p1, p2;
         GetClientRect(hWnd, &rc);
 
-        p1.x = rc.left;
-        p1.y = rc.top;
-        p2.x = rc.right;
-        p2.y = rc.bottom;
-
-        ClientToScreen(hWnd, &p1);
-        ClientToScreen(hWnd, &p2);
-
-        rc.left = p1.x;
-        rc.top = p1.y;
-        rc.right = p2.x;
-        rc.bottom = p2.y;
         UINT width = rc.right - rc.left;
         UINT height = rc.bottom - rc.top;
 
-        ClipCursor(&rc);
 
         UINT createDeviceFlags = 0;
 #ifdef _DEBUG
@@ -280,6 +266,17 @@ namespace library
         cbChangeOnResize.Projection = XMMatrixTranspose(m_projection);
         m_immediateContext->UpdateSubresource(m_cbChangeOnResize.Get(), 0, nullptr, &cbChangeOnResize, 0, 0);
 
+        //Initialize the CBLights constant buffer
+        bd.Usage = D3D11_USAGE_DEFAULT;
+        bd.ByteWidth = sizeof(CBLights);
+        bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        bd.CPUAccessFlags = 0;
+        bd.MiscFlags = 0;
+        bd.StructureByteStride = 0;
+        hr = m_d3dDevice->CreateBuffer(&bd, nullptr, m_cbLights.GetAddressOf());
+        if (FAILED(hr))
+            return hr;
+
         // Set primitive topology
         m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -333,6 +330,36 @@ namespace library
             m_renderables.insert(std::pair<PCWSTR, std::shared_ptr<Renderable>>(pszRenderableName, renderable));
             return S_OK;
         }
+    }
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Renderer::AddPointLight
+
+      Summary:  Add a point light
+
+      Args:     size_t index
+                  Index of the point light
+                const std::shared_ptr<PointLight>& pointLight
+                  Shared pointer to the point light object
+
+      Modifies: [m_aPointLights].
+
+      Returns:  HRESULT
+                  Status code.
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    HRESULT Renderer::AddPointLight(_In_ size_t index, _In_ const std::shared_ptr<PointLight>& pPointLight)
+    {
+        //When the index exceeds the size of possible lights, it returns E_FAIL
+        if (index > NUM_LIGHTS)
+        {
+            return E_FAIL;
+        }
+        //else, add the light to designated index
+        else
+        {
+            m_aPointLights[index]= pPointLight;
+        }
+        return S_OK;
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -426,6 +453,10 @@ namespace library
         {
             it->second->Update(deltaTime);
         }
+        for (int i = 0; i < NUM_LIGHTS; i++)
+        {
+            m_aPointLights[i]->Update(deltaTime);
+        }
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -445,9 +476,29 @@ namespace library
             1.0f,
             0);
        
+        // Update the Camera Constant buffer
         CBChangeOnCameraMovement cbChangeOnCameraMovement;
         cbChangeOnCameraMovement.View = XMMatrixTranspose(m_camera.GetView());
+        XMStoreFloat4(&cbChangeOnCameraMovement.CameraPosition, m_camera.GetEye());
         m_immediateContext->UpdateSubresource(m_camera.GetConstantBuffer().Get(), 0, nullptr, &cbChangeOnCameraMovement, 0, 0);
+        m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+        m_immediateContext->PSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+
+
+
+        // Update the Lights Constant buffer 
+        CBLights cbLights = {};
+        for (UINT i = 0u; i < NUM_LIGHTS; i++)
+        {
+            cbLights.LightPositions[i] = m_aPointLights[i]->GetPosition();
+            cbLights.LightColors[i] = m_aPointLights[i]->GetColor();
+            m_immediateContext->UpdateSubresource(m_cbLights.Get(), 0u, nullptr, &cbLights, 0u, 0u);
+            m_immediateContext->VSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
+            m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
+
+        }
+       
+
         // For each renderables Set the vertex buffer, index buffer, input layout
         // For each renderables Update constant buffer
         // For each renderables Render the triangles
@@ -462,18 +513,23 @@ namespace library
             // Update variables that change once per frame
             CBChangesEveryFrame cbChangesEveryFrame;
             cbChangesEveryFrame.World = XMMatrixTranspose(it->second->GetWorldMatrix());
+            cbChangesEveryFrame.OutputColor = it->second->GetOutputColor();
             m_immediateContext->UpdateSubresource(it->second->GetConstantBuffer().Get(), 0, nullptr, &cbChangesEveryFrame, 0, 0);
 
             // Renders a triangle
+            if (it->second->HasTexture())
+            {
+                m_immediateContext->PSSetShaderResources(0, 1, it->second->GetTextureResourceView().GetAddressOf());
+                m_immediateContext->PSSetSamplers(0, 1, it->second->GetSamplerState().GetAddressOf());
+            }
+
             m_immediateContext->VSSetShader(it->second->GetVertexShader().Get(), nullptr, 0);
-            m_immediateContext->VSSetConstantBuffers(0, 1, m_camera.GetConstantBuffer().GetAddressOf());
-            m_immediateContext->VSSetConstantBuffers(1, 1, m_cbChangeOnResize.GetAddressOf());
-            m_immediateContext->VSSetConstantBuffers(2, 1, it->second->GetConstantBuffer().GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(2u, 1u, it->second->GetConstantBuffer().GetAddressOf());
          
             m_immediateContext->PSSetShader(it->second->GetPixelShader().Get(), nullptr, 0);
             m_immediateContext->PSSetConstantBuffers(2, 1, it->second->GetConstantBuffer().GetAddressOf());
-            m_immediateContext->PSSetShaderResources(0, 1, it->second->GetTextureResourceView().GetAddressOf());
-            m_immediateContext->PSSetSamplers(0, 1, it->second->GetSamplerState().GetAddressOf());
             m_immediateContext->DrawIndexed(it->second->GetNumIndices(), 0, 0);        // 36 vertices needed for 12 triangles in a triangle list
 
         }

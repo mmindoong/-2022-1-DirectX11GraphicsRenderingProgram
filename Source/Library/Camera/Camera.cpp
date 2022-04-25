@@ -30,8 +30,8 @@ namespace library
         m_up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
         m_view = XMMatrixLookAtLH(m_eye, m_at, m_up);
 
-        m_travelSpeed = 0.0f;
-        m_rotationSpeed = 0.0f;
+        m_travelSpeed = 8.0f;
+        m_rotationSpeed = 5.0f;
         mouseLastState.X = 0.0f;
         mouseLastState.Y = 0.0f;
 
@@ -97,9 +97,6 @@ namespace library
       Returns:  ComPtr<ID3D11Buffer>&
                   The constant buffer
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Camera::GetConstantBuffer definition (remove the comment)
-    --------------------------------------------------------------------*/
     ComPtr<ID3D11Buffer>& Camera::GetConstantBuffer()
     {
         return m_cbChangeOnCameraMovement;
@@ -125,40 +122,54 @@ namespace library
         _In_ const MouseRelativeMovement& mouseRelativeMovement,
         _In_ FLOAT deltaTime)
     {
-        m_travelSpeed = 15.0f * deltaTime;
-        m_rotationSpeed = 10.0f * deltaTime;
+        // set camera move
+        if (directions.bUp)
+        {
+            m_moveUpDown += 1.0f;
+        }
+        if (directions.bDown)
+        {
+            m_moveUpDown -= 1.0f;
+        }
+        if (directions.bFront)
+        {
+            m_moveBackForward += 1.0f;
+        }
+        if (directions.bBack)
+        {
+            m_moveBackForward -= 1.0f;
+        }
+        if (directions.bRight)
+        {
+            m_moveLeftRight += 1.0f;
+        }
+        if (directions.bLeft)
+        {
+            m_moveLeftRight -= 1.0f;
+        }
 
-        if (directions.bFront == true)
-        {
-            m_moveBackForward += m_travelSpeed;
-        }
-        if (directions.bBack == true)
-        {
-            m_moveBackForward -= m_travelSpeed;
-        }
-        if (directions.bLeft == true)
-        {
-            m_moveLeftRight -= m_travelSpeed;
-        }
-        if (directions.bRight == true)
-        {
-            m_moveLeftRight += m_travelSpeed;
-        }
-        if (directions.bUp == true)
-        {
-            m_moveUpDown += m_travelSpeed;
-        }
-        if (directions.bDown == true)
-        {
-            m_moveUpDown -= m_travelSpeed;
-        }
-        if (mouseRelativeMovement.X != mouseLastState.X || mouseRelativeMovement.Y != mouseLastState.Y)
-        {
-            m_yaw += mouseLastState.X * m_rotationSpeed;
-            m_pitch += mouseLastState.Y * m_rotationSpeed;
+        // normalized vector
+        XMFLOAT3 direction = { m_moveBackForward, m_moveLeftRight, m_moveUpDown };
+        XMVECTOR directionVec = XMLoadFloat3(&direction);
+        directionVec = XMVector3Normalize(directionVec);
+        XMStoreFloat3(&direction, directionVec);
 
-            mouseLastState = mouseRelativeMovement;
+        m_moveBackForward = direction.x * m_travelSpeed * deltaTime;
+        m_moveLeftRight = direction.y * m_travelSpeed * deltaTime;
+        m_moveUpDown = direction.z * m_travelSpeed * deltaTime;
 
+        // set camera rotation
+        m_pitch += (float)mouseRelativeMovement.Y * m_rotationSpeed * deltaTime;
+        m_yaw += (float)mouseRelativeMovement.X * m_rotationSpeed * deltaTime;
+
+        // pitch must be in a range of(-pi/2, pi/2)
+        if (m_pitch < -XM_PIDIV2 + 0.0001f)
+        {
+            m_pitch = -XM_PIDIV2 + 0.0001f;
+        }
+        else if (m_pitch > XM_PIDIV2 - 0.0001f)
+        {
+            m_pitch = XM_PIDIV2 - 0.0001f;
         }
         Update(deltaTime);
     }
@@ -173,9 +184,6 @@ namespace library
 
       Modifies: [m_cbChangeOnCameraMovement].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Camera::Initialize definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Camera::Initialize(_In_ ID3D11Device* device)
     {
         HRESULT hr = S_OK;
