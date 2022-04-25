@@ -143,19 +143,14 @@ float4 PSPhong ( PS_PHONG_INPUT input ) : SV_TARGET
 
     for(uint i =0; i < NUM_LIGHTS; ++i)
     {
-        float3 lightDirection = normalize(input.WorldPosition - LightPositions[i].xyz);
-        diffuse += saturate(dot(input.Normal, -lightDirection)) * LightColors[i].xyz;
-        float3 reflectDirection = reflect(lightDirection, input.Normal);
+        float3 lightDirection = normalize(LightPositions[i].xyz - input.WorldPosition);
+        diffuse += saturate(dot(input.Normal, lightDirection)) * LightColors[i].xyz;
+        float3 reflectDirection = reflect(-lightDirection, input.Normal);
         specular += pow(saturate(dot(viewDirection, reflectDirection)) , 20.0f) * LightColors[i];
-        //return float4((reflectDirection+ 1.0f)/2.0f, 1.0f);
     }
 
     float4 color = txDiffuse.Sample(samLinear, input.TexCoord);
-   
-    //return float4((lightDirection + 1.0f)/2.0f, 1.0f);
     return float4((ambient + diffuse + specular) * color.rgb , 1.0f) ;
-    //return float4(specular  * color.rgb , 1.0f) ;
-
 }
 
 
