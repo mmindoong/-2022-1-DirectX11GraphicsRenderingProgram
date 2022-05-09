@@ -24,28 +24,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Cube\BaseCube.cpp">
-      <Filter>소스 파일\Cube</Filter>
-    </ClCompile>
-    <ClCompile Include="Cube\BigCube.cpp">
-      <Filter>소스 파일\Cube</Filter>
-    </ClCompile>
-    <ClCompile Include="Cube\SmallCube.cpp">
-      <Filter>소스 파일\Cube</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Cube\CustomCube.cpp">
-      <Filter>소스 파일\Cube</Filter>
-    </ClCompile>
-    <ClCompile Include="Cube\RotatingCube.cpp">
-      <Filter>소스 파일\Cube</Filter>
     </ClCompile>
     <ClCompile Include="Light\RotatingPointLight.cpp">
       <Filter>소스 파일\Light</Filter>
     </ClCompile>
+    <ClCompile Include="Cube\BaseCube.cpp">
+      <Filter>소스 파일\Cube</Filter>
+    </ClCompile>
     <ClCompile Include="Cube\Cube.cpp">
+      <Filter>소스 파일\Cube</Filter>
+    </ClCompile>
+    <ClCompile Include="Cube\RotatingCube.cpp">
       <Filter>소스 파일\Cube</Filter>
     </ClCompile>
   </ItemGroup>
@@ -66,25 +57,16 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Cube\BaseCube.h">
-      <Filter>소스 파일\Cube</Filter>
-    </ClInclude>
-    <ClInclude Include="Cube\BigCube.h">
-      <Filter>소스 파일\Cube</Filter>
-    </ClInclude>
-    <ClInclude Include="Cube\SmallCube.h">
-      <Filter>소스 파일\Cube</Filter>
-    </ClInclude>
-    <ClInclude Include="Cube\CustomCube.h">
-      <Filter>소스 파일\Cube</Filter>
-    </ClInclude>
-    <ClInclude Include="Cube\RotatingCube.h">
-      <Filter>소스 파일\Cube</Filter>
-    </ClInclude>
     <ClInclude Include="Light\RotatingPointLight.h">
       <Filter>소스 파일\Light</Filter>
     </ClInclude>
+    <ClInclude Include="Cube\BaseCube.h">
+      <Filter>소스 파일\Cube</Filter>
+    </ClInclude>
     <ClInclude Include="Cube\Cube.h">
+      <Filter>소스 파일\Cube</Filter>
+    </ClInclude>
+    <ClInclude Include="Cube\RotatingCube.h">
       <Filter>소스 파일\Cube</Filter>
     </ClInclude>
   </ItemGroup>

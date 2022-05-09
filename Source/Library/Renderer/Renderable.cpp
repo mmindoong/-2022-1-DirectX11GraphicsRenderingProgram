@@ -3,25 +3,6 @@
 
 namespace library
 {
-    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-      Method:   Renderable::Renderable
-
-      Summary:  Constructor
-
-      Args:     const std::filesystem::path& textureFilePath
-                  Path to the texture to use
-
-      Modifies: [m_vertexBuffer, m_indexBuffer, m_constantBuffer,
-                 m_textureRV, m_samplerLinear, m_vertexShader,
-                 m_pixelShader, m_textureFilePath, m_world].
-    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    Renderable::Renderable(_In_ const std::filesystem::path& textureFilePath)
-    {
-        // Initialize the world matrix
-        m_world = XMMatrixIdentity();
-        m_textureFilePath = textureFilePath;
-        m_bHasTextures = TRUE;
-    }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
        Method:   Renderable::Renderable
@@ -37,11 +18,17 @@ namespace library
                   m_world].
      M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     Renderable::Renderable(_In_ const XMFLOAT4& outputColor)
+        : m_vertexBuffer(nullptr)
+        , m_indexBuffer(nullptr)
+        , m_constantBuffer(nullptr)
+        , m_aMeshes(std::vector<BasicMeshEntry>())
+        , m_aMaterials(std::vector<Material>())
+        , m_vertexShader(nullptr)
+        , m_pixelShader(nullptr)
+        , m_outputColor(outputColor)
+        , m_world(XMMatrixIdentity())
+        , m_padding()
     {
-        // Initialize the world matrix
-        m_world = XMMatrixIdentity();
-        m_outputColor = outputColor;
-        m_bHasTextures = FALSE;
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -86,30 +73,6 @@ namespace library
         hr = pDevice->CreateBuffer(&bd, &InitData, m_indexBuffer.GetAddressOf());
         if (FAILED(hr))
             return hr;
-
-        // If m_bHasTextures is FALSE, then the textures needs not be initialized
-        if (m_bHasTextures)
-        {
-            // Load the Texture
-            //hr = CreateDDSTextureFromFile(pDevice, m_textureFilePath.filename().wstring().c_str(), nullptr, m_textureRV.GetAddressOf());
-            hr = CreateDDSTextureFromFile(pDevice, L"seafloor.dds", nullptr, m_textureRV.GetAddressOf());
-
-            if (FAILED(hr))
-                return hr;
-
-            // Create the sample state
-            D3D11_SAMPLER_DESC sampDesc = {};
-            sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-            sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-            sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-            sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-            sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-            sampDesc.MinLOD = 0;
-            sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-            hr = pDevice->CreateSamplerState(&sampDesc, m_samplerLinear.GetAddressOf());
-            if (FAILED(hr))
-                return hr;
-        }
        
         //Create the world matrix constant buffers : CBChangesEveryFrame
         bd.Usage = D3D11_USAGE_DEFAULT;
@@ -254,29 +217,35 @@ namespace library
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-      Method:   Renderable::GetTextureResourceView
+      Method:   Renderable::GetMaterial
 
-      Summary:  Returns the texture resource view
+      Summary:  Returns a material at given index
 
-      Returns:  ComPtr<ID3D11ShaderResourceView>&
-                  The texture resource view
+      Returns:  const Material&
+                  Material at given index
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    ComPtr<ID3D11ShaderResourceView>& Renderable::GetTextureResourceView()
+    const Material& Renderable::GetMaterial(UINT uIndex) const
     {
-        return m_textureRV;
+        //If the index exceeds the size of the material vector, then create an assertion failure and kill the application.
+        assert(uIndex < m_aMaterials.size());
+
+        return m_aMaterials[uIndex];
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-      Method:   Renderable::GetSamplerState
+     Method:   Renderable::GetMesh
 
-      Summary:  Returns the sampler state
+     Summary:  Returns a basic mesh entry at given index
 
-      Returns:  ComPtr<ID3D11SamplerState>&
-                  The sampler state
-    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    ComPtr<ID3D11SamplerState>& Renderable::GetSamplerState()
+     Returns:  const Renderable::BasicMeshEntry&
+                 Basic mesh entry at given index
+   M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    const Renderable::BasicMeshEntry& Renderable::GetMesh(UINT uIndex) const
     {
-        return m_samplerLinear;
+        //If the index exceeds the size of the mesh vector, then create an assertion failure and kill the application.
+        assert(uIndex < m_aMeshes.size());
+
+        return m_aMeshes[uIndex];
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -302,7 +271,10 @@ namespace library
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     BOOL Renderable::HasTexture() const
     {
-        return m_bHasTextures;
+        if (!m_aMaterials.empty())
+            return TRUE;
+        else
+            return FALSE;
     }
 
     void Renderable::RotateX(_In_ FLOAT angle)
@@ -330,4 +302,29 @@ namespace library
         m_world *= XMMatrixTranslationFromVector(offset);
     }
 
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Renderable::GetNumMeshes
+
+      Summary:  Returns the number of meshes
+
+      Returns:  UINT
+                  Number of meshes
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    UINT Renderable::GetNumMeshes() const
+    {
+        return static_cast<UINT>(m_aMeshes.size());
+    }
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+     Method:   Renderable::GetNumMaterials
+
+     Summary:  Returns the number of materials
+
+     Returns:  UINT
+                 Number of materials
+   M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    UINT Renderable::GetNumMaterials() const
+    {
+        return static_cast<UINT>(m_aMaterials.size());
+    }
 }

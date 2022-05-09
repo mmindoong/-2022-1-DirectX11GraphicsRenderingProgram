@@ -27,8 +27,12 @@ namespace library
         , m_vertexShaders()
         , m_pixelShaders()
         , m_camera({ 0, 0, 0, 0 })
+        , m_projection(XMMatrixIdentity())
+       
     {
     }
+
+       
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   Renderer::Initialize
@@ -484,8 +488,6 @@ namespace library
         m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
         m_immediateContext->PSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
 
-
-
         // Update the Lights Constant buffer 
         CBLights cbLights = {};
         for (UINT i = 0u; i < NUM_LIGHTS; i++)
@@ -498,7 +500,6 @@ namespace library
 
         }
        
-
         // For each renderables Set the vertex buffer, index buffer, input layout
         // For each renderables Update constant buffer
         // For each renderables Render the triangles
@@ -507,7 +508,7 @@ namespace library
             UINT stride = sizeof(SimpleVertex);
             UINT offset = 0;
             m_immediateContext->IASetVertexBuffers(0, 1, it->second->GetVertexBuffer().GetAddressOf(), &stride, &offset);
-            m_immediateContext->IASetIndexBuffer(it->second->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0);
+            m_immediateContext->IASetIndexBuffer(it->second->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0); 
             m_immediateContext->IASetInputLayout(it->second->GetVertexLayout().Get());
 
             // Update variables that change once per frame
@@ -516,22 +517,32 @@ namespace library
             cbChangesEveryFrame.OutputColor = it->second->GetOutputColor();
             m_immediateContext->UpdateSubresource(it->second->GetConstantBuffer().Get(), 0, nullptr, &cbChangesEveryFrame, 0, 0);
 
-            // Renders a triangle
-            if (it->second->HasTexture())
-            {
-                m_immediateContext->PSSetShaderResources(0, 1, it->second->GetTextureResourceView().GetAddressOf());
-                m_immediateContext->PSSetSamplers(0, 1, it->second->GetSamplerState().GetAddressOf());
-            }
-
             m_immediateContext->VSSetShader(it->second->GetVertexShader().Get(), nullptr, 0);
             m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
             m_immediateContext->VSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
             m_immediateContext->VSSetConstantBuffers(2u, 1u, it->second->GetConstantBuffer().GetAddressOf());
-         
+
             m_immediateContext->PSSetShader(it->second->GetPixelShader().Get(), nullptr, 0);
             m_immediateContext->PSSetConstantBuffers(2, 1, it->second->GetConstantBuffer().GetAddressOf());
-            m_immediateContext->DrawIndexed(it->second->GetNumIndices(), 0, 0);        // 36 vertices needed for 12 triangles in a triangle list
 
+            if (it->second->HasTexture())
+            {
+                for (UINT i = 0u; i < it->second->GetNumMeshes(); ++i)
+                {
+                    UINT materialIndex = it->second->GetMesh(i).uMaterialIndex;
+
+                    m_immediateContext->PSSetShaderResources(0, 1, it->second->GetMaterial(materialIndex).pDiffuse->GetTextureResourceView().GetAddressOf());
+                    m_immediateContext->PSSetSamplers(0, 1, it->second->GetMaterial(materialIndex).pDiffuse->GetSamplerState().GetAddressOf());
+
+
+                    m_immediateContext->DrawIndexed(it->second->GetMesh(i).uNumIndices, it->second->GetMesh(i).uBaseIndex, it->second->GetMesh(i).uBaseVertex);
+
+                }
+            }
+            else
+            {
+                m_immediateContext->DrawIndexed(it->second->GetNumIndices(), 0, 0);        // 36 vertices needed for 12 triangles in a triangle list
+            }
         }
         // Present our back buffer to our front buffer
         m_swapChain->Present(0, 0);
