@@ -28,7 +28,6 @@ namespace library
         , m_pixelShaders()
         , m_camera({ 0, 0, 0, 0 })
         , m_projection(XMMatrixIdentity())
-       
     {
     }
 
@@ -292,6 +291,15 @@ namespace library
             if (FAILED(hr))
                 return hr;
         }
+        
+        for (auto voxel = m_scenes.begin(); voxel != m_scenes.end(); voxel++)
+        {
+            for (int i = 0; i < voxel->second->GetVoxels().size(); i++)
+            {
+                voxel->second->GetVoxels()[i]->Initialize(m_d3dDevice.Get(), m_immediateContext.Get());
+            }
+        }
+        
         for (auto it = m_vertexShaders.begin(); it != m_vertexShaders.end(); it++)
         {
             hr = it->second->Initialize(m_d3dDevice.Get());
@@ -331,6 +339,7 @@ namespace library
         }
         else
         {
+            //std::unordered_map<std::wstring, std::shared_ptr<Renderable>>
             m_renderables.insert(std::pair<PCWSTR, std::shared_ptr<Renderable>>(pszRenderableName, renderable));
             return S_OK;
         }
@@ -364,6 +373,30 @@ namespace library
             m_aPointLights[index]= pPointLight;
         }
         return S_OK;
+    }
+
+    HRESULT Renderer::AddScene(_In_ PCWSTR pszSceneName, const std::filesystem::path& sceneFilePath)
+    {
+        std::shared_ptr<Scene> scene = std::make_shared<Scene>(sceneFilePath);
+        if (m_scenes.contains(pszSceneName))
+        {
+            return E_FAIL;
+        }
+        else
+        {
+            m_scenes.insert(std::pair<PCWSTR, std::shared_ptr<Scene>>(pszSceneName, scene));
+            return S_OK;
+        }
+    }
+
+    HRESULT Renderer::SetMainScene(_In_ PCWSTR pszSceneName)
+    {
+        //해당 name의 scene을 메인으로 두고, 이후에 renderer에서 MainScene의 voxel을 렌더링함.
+        if (m_scenes.contains(pszSceneName))
+        {
+           m_mainScene = m_scenes.at(pszSceneName);
+           return S_OK;
+        }
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -497,9 +530,8 @@ namespace library
             m_immediateContext->UpdateSubresource(m_cbLights.Get(), 0u, nullptr, &cbLights, 0u, 0u);
             m_immediateContext->VSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
             m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
-
         }
-       
+    
         // For each renderables Set the vertex buffer, index buffer, input layout
         // For each renderables Update constant buffer
         // For each renderables Render the triangles
@@ -521,9 +553,11 @@ namespace library
             m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
             m_immediateContext->VSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
             m_immediateContext->VSSetConstantBuffers(2u, 1u, it->second->GetConstantBuffer().GetAddressOf());
-
             m_immediateContext->PSSetShader(it->second->GetPixelShader().Get(), nullptr, 0);
-            m_immediateContext->PSSetConstantBuffers(2, 1, it->second->GetConstantBuffer().GetAddressOf());
+
+            m_immediateContext->PSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+            m_immediateContext->PSSetConstantBuffers(2u, 1u, it->second->GetConstantBuffer().GetAddressOf());
+            m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
 
             if (it->second->HasTexture())
             {
@@ -534,14 +568,66 @@ namespace library
                     m_immediateContext->PSSetShaderResources(0, 1, it->second->GetMaterial(materialIndex).pDiffuse->GetTextureResourceView().GetAddressOf());
                     m_immediateContext->PSSetSamplers(0, 1, it->second->GetMaterial(materialIndex).pDiffuse->GetSamplerState().GetAddressOf());
 
-
                     m_immediateContext->DrawIndexed(it->second->GetMesh(i).uNumIndices, it->second->GetMesh(i).uBaseIndex, it->second->GetMesh(i).uBaseVertex);
-
                 }
             }
             else
             {
                 m_immediateContext->DrawIndexed(it->second->GetNumIndices(), 0, 0);        // 36 vertices needed for 12 triangles in a triangle list
+            }
+        }
+        
+        // render the voxels of the main scene
+        // 1. For each voxels Set the vertex buffer, index buffer, instance buffer
+        // 2. For each voxels Set the input layout
+        // 3. For each voxels Update constant buffer
+        // 4. For each voxels Set the Shaders and their input(constant buffer etc)
+        // 5.  DrawIndexedInstanced
+        for (auto voxel = m_scenes.begin(); voxel != m_scenes.end(); voxel++)
+        {
+            for (int it = 0; it < voxel->second->GetVoxels().size(); it++)
+            {
+                // 1. The instance buffer is just a second vertex buffer containing different infromation 
+                // so it is set on the device at the same time using the same call as the vertex buffer
+                // So stride, offset, buffer we now send an arrary of strides, offsets, and buffers to the IASetVertexBuffers call.
+
+                UINT offset = 0;
+
+                //Set the buffer strides
+                UINT stride = sizeof(SimpleVertex);
+                UINT stride1 = sizeof(InstanceData);
+
+                //Set both the vertex buffer and the instance buffer on the device context in the same call
+                //Set the vertex buffer to active in the input assembler so it can be rendered.
+                m_immediateContext->IASetVertexBuffers(0, 1, voxel->second->GetVoxels()[it]->GetVertexBuffer().GetAddressOf(), &stride, &offset);
+                m_immediateContext->IASetVertexBuffers(1, 1, voxel->second->GetVoxels()[it]->GetInstanceBuffer().GetAddressOf(), &stride1, &offset);
+
+                // Set the index buffer
+                m_immediateContext->IASetIndexBuffer(voxel->second->GetVoxels()[it]->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0);
+                //2. Set the vertex input layout
+                m_immediateContext->IASetInputLayout(voxel->second->GetVoxels()[it]->GetVertexLayout().Get());
+
+                //3. Update variables that change once per frame
+                CBChangesEveryFrame cbChangesEveryFrame;
+                cbChangesEveryFrame.World = XMMatrixTranspose(voxel->second->GetVoxels()[it]->GetWorldMatrix());
+                cbChangesEveryFrame.OutputColor = voxel->second->GetVoxels()[it]->GetOutputColor();
+                m_immediateContext->UpdateSubresource(voxel->second->GetVoxels()[it]->GetConstantBuffer().Get(), 0, nullptr, &cbChangesEveryFrame, 0, 0);
+
+                //4. Set the vertex and pixel shaders that will be used to render voxels
+                //Set the new VS and PS shaders
+                m_immediateContext->VSSetShader(voxel->second->GetVoxels()[it]->GetVertexShader().Get(),nullptr, 0);
+                m_immediateContext->PSSetShader(voxel->second->GetVoxels()[it]->GetPixelShader().Get(), nullptr, 0);
+
+                //Set the ConstantBuffers
+                m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+                m_immediateContext->VSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
+                m_immediateContext->VSSetConstantBuffers(2u, 1u, voxel->second->GetVoxels()[it]->GetConstantBuffer().GetAddressOf());
+
+                m_immediateContext->PSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+                m_immediateContext->PSSetConstantBuffers(2u, 1u, voxel->second->GetVoxels()[it]->GetConstantBuffer().GetAddressOf());
+                m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
+
+                m_immediateContext->DrawIndexedInstanced(voxel->second->GetVoxels()[it]->GetNumIndices(), voxel->second->GetVoxels()[it]->GetNumInstances(), 0u, 0, 0u);
             }
         }
         // Present our back buffer to our front buffer
@@ -615,5 +701,37 @@ namespace library
     D3D_DRIVER_TYPE Renderer::GetDriverType() const
     {
         return m_driverType;
+    }
+
+    HRESULT Renderer::SetVertexShaderOfScene(_In_ PCWSTR pszSceneName, _In_ PCWSTR pszVertexShaderName)
+    {
+        if (m_scenes.contains(pszSceneName))
+        {
+            for (UINT i = 0u; i < m_scenes[pszSceneName]->GetVoxels().size(); ++i)
+            {
+                m_scenes[pszSceneName]->GetVoxels()[i]->SetVertexShader(m_vertexShaders[pszVertexShaderName]);
+            }
+            return S_OK;
+        }
+        else
+        {
+            return E_FAIL;
+        }
+    }
+
+    HRESULT Renderer::SetPixelShaderOfScene(_In_ PCWSTR pszSceneName, _In_ PCWSTR pszPixelShaderName)
+    {
+        if (m_scenes.contains(pszSceneName))
+        {
+            for (UINT i = 0u; i < m_scenes[pszSceneName]->GetVoxels().size(); ++i)
+            {
+                m_scenes[pszSceneName]->GetVoxels()[i]->SetPixelShader(m_pixelShaders[pszPixelShaderName]);
+            }
+            return S_OK;
+        }
+        else
+        {
+            return E_FAIL;
+        }
     }
 }
