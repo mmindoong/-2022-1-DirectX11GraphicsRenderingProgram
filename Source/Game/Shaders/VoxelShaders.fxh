@@ -60,7 +60,7 @@ cbuffer cbLights : register(b3)
 {
     float4 LightPositions[NUM_LIGHTS];
     float4 LightColors[NUM_LIGHTS];
-}
+};
 
 //--------------------------------------------------------------------------------------
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
@@ -109,7 +109,7 @@ PS_INPUT VSVoxel(VS_INPUT input)
     output.TexCoord = input.TexCoord;
     output.Normal = normalize(mul(float4(input.Normal, 1), World).xyz);
     
-    output.WorldPosition = mul(input.Position, input.Transform);
+    output.WorldPosition = (mul(input.Position, input.Transform)).xyz;
     return output;
     
 }
@@ -129,7 +129,7 @@ float4 PSVoxel(PS_INPUT input) : SV_Target
     
     for (uint it = 0; it < NUM_LIGHTS; ++it)
     {
-        float lightDirection = normalize(LightPositions[it].xyz - input.WorldPosition);
+        float3 lightDirection = normalize(LightPositions[it].xyz - input.WorldPosition);
         diffuse += saturate(dot(input.Normal, lightDirection)) * LightColors[it].xyz;
     }
     return float4((ambient + diffuse) * OutputColor.xyz, 1.0f);
