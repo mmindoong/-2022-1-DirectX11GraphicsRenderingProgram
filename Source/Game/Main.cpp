@@ -74,7 +74,6 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     {
         return 0;
     }
-
     // Phong
     std::shared_ptr<library::PixelShader> phongPixelShader = std::make_shared<library::PixelShader>(L"Shaders/PhongShaders.fxh", "PSPhong", "ps_5_0");
     if (FAILED(game->GetRenderer()->AddPixelShader(L"PhongShader", phongPixelShader)))

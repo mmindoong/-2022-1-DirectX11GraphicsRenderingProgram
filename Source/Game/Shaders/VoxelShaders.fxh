@@ -8,9 +8,6 @@
 //--------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------
-/*--------------------------------------------------------------------
-  TODO: Declare a diffuse texture and a sampler state (remove the comment)
---------------------------------------------------------------------*/
 Texture2D txDiffuse : register(t0);
 SamplerState samLinear : register(s0);
 
@@ -22,9 +19,6 @@ SamplerState samLinear : register(s0);
 
   Summary:  Constant buffer used for view transformation and shading
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: cbChangeOnCameraMovement definition (remove the comment)
---------------------------------------------------------------------*/
 cbuffer cbCqhangeOnCameraMovement : register(b0)
 {
     matrix View;
@@ -37,9 +31,6 @@ cbuffer cbCqhangeOnCameraMovement : register(b0)
 
   Summary:  Constant buffer used for projection transformation
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: cbChangeOnResize definition (remove the comment)
---------------------------------------------------------------------*/
 cbuffer cbChangeOnResize : register(b1)
 {
     matrix Projection;
@@ -52,9 +43,6 @@ cbuffer cbChangeOnResize : register(b1)
   Summary:  Constant buffer used for world transformation, and the 
             color of the voxel
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: cbChangesEveryFrame definition (remove the comment)
---------------------------------------------------------------------*/
 cbuffer cbChangesEveryFrame : register(b2)
 {
     matrix World;
@@ -67,9 +55,7 @@ cbuffer cbChangesEveryFrame : register(b2)
 
   Summary:  Constant buffer used for shading
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: cbLights definition (remove the comment)
---------------------------------------------------------------------*/
+
 cbuffer cbLights : register(b3)
 {
     float4 LightPositions[NUM_LIGHTS];
@@ -83,9 +69,6 @@ cbuffer cbLights : register(b3)
   Summary:  Used as the input to the vertex shader, 
             instance data included
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: VS_INPUT definition (remove the comment)
---------------------------------------------------------------------*/
 struct VS_INPUT
 {
     float4 Position : POSITION;
@@ -101,9 +84,6 @@ struct VS_INPUT
   Summary:  Used as the input to the pixel shader, output of the 
             vertex shader
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: PS_INPUT definition (remove the comment)
---------------------------------------------------------------------*/
 struct PS_INPUT
 {
     float4 Position : SV_POSITION;
@@ -115,9 +95,6 @@ struct PS_INPUT
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 //--------------------------------------------------------------------------------------
-/*--------------------------------------------------------------------
-  TODO: Vertex Shader function VSVoxel definition (remove the comment)
---------------------------------------------------------------------*/
 PS_INPUT VSVoxel(VS_INPUT input)
 {
     PS_INPUT output = (PS_INPUT) 0;
@@ -130,9 +107,9 @@ PS_INPUT VSVoxel(VS_INPUT input)
     
     // Store the texture coordinates for the pixel shader.
     output.TexCoord = input.TexCoord;
-    
     output.Normal = normalize(mul(float4(input.Normal, 1), World).xyz);
-    output.WorldPosition = mul(input.Position, World);
+    
+    output.WorldPosition = mul(input.Position, input.Transform);
     return output;
     
 }
@@ -140,24 +117,20 @@ PS_INPUT VSVoxel(VS_INPUT input)
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------
-/*--------------------------------------------------------------------
-  TODO: Pixel Shader function PSVoxel definition (remove the comment)
---------------------------------------------------------------------*/
 float4 PSVoxel(PS_INPUT input) : SV_Target
 {
     float3 ambient = float3(0.1f, 0.1f, 0.1f);
+    float3 diffuse = float3(0.0f, 0.0f, 0.0f);
+    
     for (uint i = 0; i < NUM_LIGHTS; ++i)
     {
         ambient += float3(0.1f, 0.1f, 0.1f) * LightColors[i].xyz;
     }
     
-    float3 diffuse = float3(0.0f, 0.0f, 0.0f);
-
-    for (uint i = 0; i < NUM_LIGHTS; ++i)
+    for (uint it = 0; it < NUM_LIGHTS; ++it)
     {
-        float3 lightDirection = normalize(LightPositions[i].xyz - input.WorldPosition);
-        diffuse += saturate(dot(input.Normal, lightDirection)) * LightColors[i].xyz;
+        float lightDirection = normalize(LightPositions[it].xyz - input.WorldPosition);
+        diffuse += saturate(dot(input.Normal, lightDirection)) * LightColors[it].xyz;
     }
-
-    return float4((ambient + diffuse) * OutputColor, 1.0f);
+    return float4((ambient + diffuse) * OutputColor.xyz, 1.0f);
 }

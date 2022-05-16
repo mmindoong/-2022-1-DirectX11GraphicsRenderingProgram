@@ -299,7 +299,6 @@ namespace library
                 voxel->second->GetVoxels()[i]->Initialize(m_d3dDevice.Get(), m_immediateContext.Get());
             }
         }
-        
         for (auto it = m_vertexShaders.begin(); it != m_vertexShaders.end(); it++)
         {
             hr = it->second->Initialize(m_d3dDevice.Get());
@@ -550,14 +549,13 @@ namespace library
             m_immediateContext->UpdateSubresource(it->second->GetConstantBuffer().Get(), 0, nullptr, &cbChangesEveryFrame, 0, 0);
 
             m_immediateContext->VSSetShader(it->second->GetVertexShader().Get(), nullptr, 0);
-            m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+           
             m_immediateContext->VSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
             m_immediateContext->VSSetConstantBuffers(2u, 1u, it->second->GetConstantBuffer().GetAddressOf());
             m_immediateContext->PSSetShader(it->second->GetPixelShader().Get(), nullptr, 0);
 
-            m_immediateContext->PSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
             m_immediateContext->PSSetConstantBuffers(2u, 1u, it->second->GetConstantBuffer().GetAddressOf());
-            m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
+            //m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
 
             if (it->second->HasTexture())
             {
@@ -619,14 +617,11 @@ namespace library
                 m_immediateContext->PSSetShader(voxel->second->GetVoxels()[it]->GetPixelShader().Get(), nullptr, 0);
 
                 //Set the ConstantBuffers
-                m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+          
                 m_immediateContext->VSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
                 m_immediateContext->VSSetConstantBuffers(2u, 1u, voxel->second->GetVoxels()[it]->GetConstantBuffer().GetAddressOf());
 
-                m_immediateContext->PSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
                 m_immediateContext->PSSetConstantBuffers(2u, 1u, voxel->second->GetVoxels()[it]->GetConstantBuffer().GetAddressOf());
-                m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
-
                 m_immediateContext->DrawIndexedInstanced(voxel->second->GetVoxels()[it]->GetNumIndices(), voxel->second->GetVoxels()[it]->GetNumInstances(), 0u, 0, 0u);
             }
         }
