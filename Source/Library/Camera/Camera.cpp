@@ -25,7 +25,7 @@ namespace library
         m_cameraRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
         m_cameraUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
-        m_eye = XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f);
+        m_eye = XMVectorSet(0.0f, 3.0f, -5.0f, 0.0f);
         m_at = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
         m_up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
         m_view = XMMatrixLookAtLH(m_eye, m_at, m_up);

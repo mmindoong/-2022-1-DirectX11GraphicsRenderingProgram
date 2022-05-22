@@ -279,7 +279,7 @@ namespace library
 
     void Renderable::RotateX(_In_ FLOAT angle)
     {
-        m_world *= XMMatrixRotationZ(-angle);
+        m_world *= XMMatrixRotationX(angle);
     }
     void Renderable::RotateY(_In_ FLOAT angle)
     {

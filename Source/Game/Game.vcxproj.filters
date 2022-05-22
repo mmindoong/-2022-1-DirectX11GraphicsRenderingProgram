@@ -27,9 +27,6 @@
     <ClCompile Include="Main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Light\RotatingPointLight.cpp">
-      <Filter>소스 파일\Light</Filter>
-    </ClCompile>
     <ClCompile Include="Cube\BaseCube.cpp">
       <Filter>소스 파일\Cube</Filter>
     </ClCompile>
@@ -41,6 +38,9 @@
     </ClCompile>
     <ClCompile Include="Cube\Cube.cpp">
       <Filter>소스 파일\Cube</Filter>
+    </ClCompile>
+    <ClCompile Include="Light\RotatingPointLight.cpp">
+      <Filter>소스 파일\Light</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -61,11 +61,11 @@
     <None Include="Shaders\VoxelShaders.fxh">
       <Filter>소스 파일\Shaders</Filter>
     </None>
+    <None Include="Shaders\SkinningShaders.fxh">
+      <Filter>소스 파일\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Light\RotatingPointLight.h">
-      <Filter>소스 파일\Light</Filter>
-    </ClInclude>
     <ClInclude Include="Cube\BaseCube.h">
       <Filter>소스 파일\Cube</Filter>
     </ClInclude>
@@ -77,6 +77,9 @@
     </ClInclude>
     <ClInclude Include="Cube\Cube.h">
       <Filter>소스 파일\Cube</Filter>
+    </ClInclude>
+    <ClInclude Include="Light\RotatingPointLight.h">
+      <Filter>소스 파일\Light</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

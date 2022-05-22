@@ -93,6 +93,9 @@
     <ClCompile Include="Renderer\InstancedRenderable.cpp">
       <Filter>소스 파일\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="Shader\SkinningVertexShader.cpp">
+      <Filter>소스 파일\Shader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h">
@@ -157,6 +160,9 @@
     </ClInclude>
     <ClInclude Include="Renderer\InstancedRenderable.h">
       <Filter>소스 파일\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader\SkinningVertexShader.h">
+      <Filter>소스 파일\Shader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
