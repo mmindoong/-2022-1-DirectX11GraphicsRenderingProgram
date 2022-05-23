@@ -1,10 +1,7 @@
 /*+===================================================================
   File:      MAIN.CPP
-
   Summary:   This application demonstrates creating a Direct3D 11 device
-
   Origin:    http://msdn.microsoft.com/en-us/library/windows/apps/ff729718.aspx
-
   Originally created by Microsoft Corporation under MIT License
   2022 Kyung Hee University
 ===================================================================+*/
@@ -16,22 +13,16 @@
 #include <memory>
 
 #include "Game/Game.h"
-#include "Scene/Scene.h"
-#include "Scene/Voxel.h"
-
-#include "Cube/Cube.h"
-#include "Cube/RotatingCube.h"
 #include "Light/RotatingPointLight.h"
 #include "Model/Model.h"
+#include "Scene/Voxel.h"
 #include "Shader/SkinningVertexShader.h"
 
 /*F+F+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   Function: wWinMain
-
   Summary:  Entry point to the program. Initializes everything and
             goes into a message processing loop. Idle time is used to
             render the scene.
-
   Args:     HINSTANCE hInstance
               Handle to an instance.
             HINSTANCE hPrevInstance
@@ -42,7 +33,6 @@
             INT nCmdShow
               Flag that says whether the main application window
               will be minimized, maximized, or shown normally
-
   Returns:  INT
               Status code.
 -----------------------------------------------------------------F-F*/
@@ -92,10 +82,9 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     {
         return 0;
     }
-    
+
     std::shared_ptr<library::Model> warrior = std::make_shared<library::Model>(L"Content/BobLampClean/boblampclean.md5mesh");
     warrior->RotateX(XM_PIDIV2);
-
     warrior->Scale(0.1f, 0.1f, 0.1f);
 
     if (FAILED(game->GetRenderer()->AddModel(L"Warrior", warrior)))
@@ -112,23 +101,6 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     {
         return 0;
     }
-    
-    /*
-    std::shared_ptr<library::Model> NanoSuitModel = std::make_shared<library::Model>(L"./nanosuit/nanosuit.obj");
-    if (FAILED(game->GetRenderer()->AddModel(L"NanoSuit", NanoSuitModel)))
-    {
-        return 0;
-    }
-
-    if (FAILED(game->GetRenderer()->SetVertexShaderOfModel(L"NanoSuit", L"PhongSkinningShader")))
-    {
-        return 0;
-    }
-    if (FAILED(game->GetRenderer()->SetPixelShaderOfModel(L"NanoSuit", L"PhongSkinningShader")))
-    {
-        return 0;
-    }
-    */
 
     XMFLOAT4 color;
     XMStoreFloat4(&color, Colors::White);
