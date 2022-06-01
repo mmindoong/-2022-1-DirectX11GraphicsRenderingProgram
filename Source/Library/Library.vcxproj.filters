@@ -96,6 +96,12 @@
     <ClCompile Include="Shader\SkinningVertexShader.cpp">
       <Filter>소스 파일\Shader</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer\Skybox.cpp">
+      <Filter>소스 파일\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader\SkyMapVertexShader.cpp">
+      <Filter>소스 파일\Shader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h">
@@ -162,6 +168,12 @@
       <Filter>소스 파일\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Shader\SkinningVertexShader.h">
+      <Filter>소스 파일\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Skybox.h">
+      <Filter>소스 파일\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader\SkyMapVertexShader.h">
       <Filter>소스 파일\Shader</Filter>
     </ClInclude>
   </ItemGroup>

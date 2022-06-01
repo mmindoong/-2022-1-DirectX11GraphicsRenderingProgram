@@ -27,7 +27,7 @@ namespace library
     {
     public:
         PointLight() = delete;
-        PointLight(_In_ const XMFLOAT4& position, _In_ const XMFLOAT4& color);
+        PointLight(_In_ const XMFLOAT4& position, _In_ const XMFLOAT4& color, _In_ FLOAT attenuationDistance);
         PointLight(const PointLight& other) = default;
         PointLight(PointLight&& other) = default;
         PointLight& operator=(const PointLight& other) = default;
@@ -36,10 +36,13 @@ namespace library
 
         const XMFLOAT4& GetPosition() const;
         const XMFLOAT4& GetColor() const;
+        FLOAT GetAttenuationDistance() const;
 
         virtual void Update(_In_ FLOAT deltaTime);
+
     protected:
         XMFLOAT4 m_position;
         XMFLOAT4 m_color;
+        FLOAT m_attenuationDistance;
     };
 }

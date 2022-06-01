@@ -1,13 +1,13 @@
 /*+===================================================================
-  File:      V0XEL.H
+  File:      SCENE.H
 
-  Summary:   Voxel header file contains declarations of Voxel class
+  Summary:   Scene header file contains declarations of Scene class
              used for the lab samples of Game Graphics Programming
              course.
 
-  Classes: Voxel
+  Classes: Scene
 
-  © 2022 Kyung Hee University
+  ?2022 Kyung Hee University
 ===================================================================+*/
 #pragma once
 
@@ -15,6 +15,9 @@
 
 #include <fstream>
 
+#include "Model/Model.h"
+#include "Light/PointLight.h"
+#include "Renderer/Skybox.h"
 #include "Renderer/Renderable.h"
 #include "Scene/Voxel.h"
 
@@ -34,9 +37,33 @@ namespace library
 
         virtual HRESULT Initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext);
 
+        HRESULT AddVoxel(_In_ const std::shared_ptr<Voxel>& voxel);
+        HRESULT AddRenderable(_In_ PCWSTR pszRenderableName, _In_ const std::shared_ptr<Renderable>& renderable);
+        HRESULT AddModel(_In_ PCWSTR pszModelName, _In_ const std::shared_ptr<Model>& pModel);
+        HRESULT AddPointLight(_In_ size_t index, _In_ const std::shared_ptr<PointLight>& pPointLight);
+        HRESULT AddVertexShader(_In_ PCWSTR pszVertexShaderName, _In_ const std::shared_ptr<VertexShader>& vertexShader);
+        HRESULT AddPixelShader(_In_ PCWSTR pszPixelShaderName, _In_ const std::shared_ptr<PixelShader>& pixelShader);
+        HRESULT AddSkyBox(_In_ const std::shared_ptr<Skybox>& skybox);
+
+        void Update(_In_ FLOAT deltaTime);
+
         std::vector<std::shared_ptr<Voxel>>& GetVoxels();
+        std::unordered_map<std::wstring, std::shared_ptr<Renderable>>& GetRenderables();
+        std::unordered_map<std::wstring, std::shared_ptr<Model>>& GetModels();
+        std::shared_ptr<PointLight>& GetPointLight(_In_ size_t index);
+        std::unordered_map<std::wstring, std::shared_ptr<VertexShader>>& GetVertexShaders();
+        std::unordered_map<std::wstring, std::shared_ptr<PixelShader>>& GetPixelShaders();
+        std::shared_ptr<Skybox>& GetSkyBox();
+
         const std::filesystem::path& GetFilePath() const;
         PCWSTR GetFileName() const;
+
+        HRESULT SetVertexShaderOfRenderable(_In_ PCWSTR pszRenderableName, _In_ PCWSTR pszVertexShaderName);
+        HRESULT SetPixelShaderOfRenderable(_In_ PCWSTR pszRenderableName, _In_ PCWSTR pszPixelShaderName);
+        HRESULT SetVertexShaderOfModel(_In_ PCWSTR pszModelName, _In_ PCWSTR pszVertexShaderName);
+        HRESULT SetPixelShaderOfModel(_In_ PCWSTR pszModelName, _In_ PCWSTR pszPixelShaderName);
+        HRESULT SetVertexShaderOfVoxel(_In_ PCWSTR pszVertexShaderName);
+        HRESULT SetPixelShaderOfVoxel(_In_ PCWSTR pszPixelShaderName);
 
     private:
         static FLOAT getNoise2(UINT x, UINT y);
@@ -64,5 +91,11 @@ namespace library
     private:
         std::filesystem::path m_filePath;
         std::vector<std::shared_ptr<Voxel>> m_voxels;
+        std::unordered_map<std::wstring, std::shared_ptr<Renderable>> m_renderables;
+        std::unordered_map<std::wstring, std::shared_ptr<Model>> m_models;
+        std::shared_ptr<PointLight> m_aPointLights[NUM_LIGHTS];
+        std::unordered_map<std::wstring, std::shared_ptr<VertexShader>> m_vertexShaders;
+        std::unordered_map<std::wstring, std::shared_ptr<PixelShader>> m_pixelShaders;
+        std::shared_ptr<Skybox> m_skyBox;
     };
 }

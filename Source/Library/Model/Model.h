@@ -7,12 +7,11 @@
 
   Classes: Model
 
-  2022 Kyung Hee University
+  ?2022 Kyung Hee University
 ===================================================================+*/
 #pragma once
 
 #include "Common.h"
-
 #include "Renderer/DataTypes.h"
 #include "Renderer/Renderable.h"
 #include "Shader/PixelShader.h"
@@ -22,7 +21,6 @@
 struct aiScene;
 struct aiMesh;
 struct aiMaterial;
-
 struct aiAnimation;
 struct aiBone;
 struct aiNode;
@@ -35,7 +33,6 @@ namespace Assimp
 
 namespace library
 {
-
     /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
       Class:    Model
 
@@ -89,12 +86,12 @@ namespace library
         const std::unordered_map<std::string, UINT>& GetBoneNameToIndexMap() const;
 
     protected:
-        struct VertexBoneData //This structure stores information about the bones that affect the one specific vertex
+        struct VertexBoneData
         {
             VertexBoneData()
                 : aBoneIds{ 0u, }
-                , aWeights{ 0.0f, } 
-                , uNumBones(0u) 
+                , aWeights{ 0.0f, }
+                , uNumBones(0u)
             {
                 ZeroMemory(aBoneIds, ARRAYSIZE(aBoneIds) * sizeof(aBoneIds[0]));
                 ZeroMemory(aWeights, ARRAYSIZE(aWeights) * sizeof(aWeights[0]));
@@ -114,12 +111,12 @@ namespace library
                 ++uNumBones;
             }
 
-            UINT aBoneIds[MAX_NUM_BONES_PER_VERTEX]; //Array containing the Ids of bones that affect the vertex 
-            FLOAT aWeights[MAX_NUM_BONES_PER_VERTEX]; //Array containing the weights that how much bones affect the vertex 
+            UINT aBoneIds[MAX_NUM_BONES_PER_VERTEX];
+            FLOAT aWeights[MAX_NUM_BONES_PER_VERTEX];
             UINT uNumBones;
         };
 
-        struct BoneInfo //This structures stores the transformation matrices of the specific bone
+        struct BoneInfo
         {
             BoneInfo() = default;
             BoneInfo(const XMMATRIX& Offset)
@@ -128,8 +125,8 @@ namespace library
             {
             }
 
-            XMMATRIX OffsetMatrix; //Matrix from model space to bone space
-            XMMATRIX FinalTransformation; //Skinning transformation matrix that will be delivered to the vertex shader
+            XMMATRIX OffsetMatrix;
+            XMMATRIX FinalTransformation;
         };
 
         void countVerticesAndIndices(_Inout_ UINT& uOutNumVertices, _Inout_ UINT& uOutNumIndices, _In_ const aiScene* pScene);
@@ -173,6 +170,13 @@ namespace library
             _In_ const aiMaterial* pMaterial,
             _In_ UINT uIndex
         );
+        HRESULT loadNormalTexture(
+            _In_ ID3D11Device* pDevice,
+            _In_ ID3D11DeviceContext* pImmediateContext,
+            _In_ const std::filesystem::path& parentDirectory,
+            _In_ const aiMaterial* pMaterial,
+            _In_ UINT uIndex
+        );
         HRESULT loadTextures(
             _In_ ID3D11Device* pDevice,
             _In_ ID3D11DeviceContext* pImmediateContext,
@@ -193,19 +197,18 @@ namespace library
         ComPtr<ID3D11Buffer> m_skinningConstantBuffer;
 
         std::vector<SimpleVertex> m_aVertices;
-        std::vector<AnimationData> m_aAnimationData; //Vector containing AnimationData of every vertex, which is content of the m_animationBuffer
-        std::vector<WORD> m_aIndices; 
-        std::vector<VertexBoneData> m_aBoneData; //Vector containing VertexBoneData of every vertex
-        std::vector<BoneInfo> m_aBoneInfo; //Vector containing BoneInfo of every bone
-        std::vector<XMMATRIX> m_aTransforms; //Vector containing bone transform of every bone, which will be delivered to the vertex shader via skinning constant buffer
-        std::unordered_map<std::string, UINT> m_boneNameToIndexMap; 
-
+        std::vector<AnimationData> m_aAnimationData;
+        std::vector<WORD> m_aIndices;
+        std::vector<VertexBoneData> m_aBoneData;
+        std::vector<BoneInfo> m_aBoneInfo;
+        std::vector<XMMATRIX> m_aTransforms;
+        std::unordered_map<std::string, UINT> m_boneNameToIndexMap;
 
         const aiScene* m_pScene;
 
         float m_timeSinceLoaded;
 
-        XMMATRIX m_globalInverseTransform; //Matrix from world space to model space
+        XMMATRIX m_globalInverseTransform;
 
         //BYTE m_padding[8];
     };
