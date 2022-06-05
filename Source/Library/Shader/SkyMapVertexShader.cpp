@@ -19,6 +19,11 @@ namespace library
     /*--------------------------------------------------------------------
       TODO: SkyMapVertexShader::SkyMapVertexShader definition (remove the comment)
     --------------------------------------------------------------------*/
+    SkyMapVertexShader::SkyMapVertexShader(_In_ PCWSTR pszFileName, _In_ PCSTR pszEntryPoint, _In_ PCSTR pszShaderModel)
+        : VertexShader(pszFileName, pszEntryPoint, pszShaderModel)
+    {
+    }
+
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   SkyMapVertexShader::Initialize
@@ -34,4 +39,43 @@ namespace library
     /*--------------------------------------------------------------------
       TODO: SkyMapVertexShader::Initialize definition (remove the comment)
     --------------------------------------------------------------------*/
+    HRESULT SkyMapVertexShader::Initialize(_In_ ID3D11Device* pDevice)
+    {
+        HRESULT hr = S_OK;
+
+        // Compile the vertex shaders
+        ComPtr<ID3DBlob> pVSBlob;
+        hr = compile(pVSBlob.GetAddressOf());
+        if (FAILED(hr))
+        {
+            MessageBox(nullptr,
+                L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
+            return hr;
+        }
+
+        // Create the vertex shader
+        hr = pDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_vertexShader.GetAddressOf());
+        if (FAILED(hr))
+        {
+            return hr;
+        }
+
+        // Define and create the input layout
+        // Define the input layout, Vertex position in object space.
+        // The instance data is a tranfromation matrix, thus it requires four input elements
+        D3D11_INPUT_ELEMENT_DESC layout[] =
+        {
+            // 0th input slot for SimpleVertex
+            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+        };
+        UINT numElements = ARRAYSIZE(layout);
+
+        // Create the input layout Object
+        hr = pDevice->CreateInputLayout(layout, numElements, pVSBlob->GetBufferPointer(),
+            pVSBlob->GetBufferSize(), m_vertexLayout.GetAddressOf());
+        if (FAILED(hr))
+            return hr;
+
+        return hr;
+    }
 }

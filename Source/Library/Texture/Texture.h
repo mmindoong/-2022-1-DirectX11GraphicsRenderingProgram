@@ -46,4 +46,5 @@ namespace library
         ComPtr<ID3D11ShaderResourceView> m_textureRV;
         eTextureSamplerType m_textureSamplerType;
     };
+  
 }

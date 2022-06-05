@@ -28,10 +28,11 @@ namespace library
         , m_voxels()
         , m_renderables()
         , m_models()
-        , m_aPointLights{ nullptr, nullptr }
+        , m_aPointLights{ nullptr,nullptr }
         , m_vertexShaders()
         , m_pixelShaders()
         , m_materials()
+        , m_skyBox()
     {
         std::ifstream inputFile;
         inputFile.open(m_filePath.string());
@@ -217,6 +218,15 @@ namespace library
             }
         }
 
+        if (m_skyBox)
+        {
+            HRESULT hr = m_skyBox->Initialize(pDevice, pImmediateContext);
+            if (FAILED(hr))
+            {
+                return hr;
+            }
+        }
+
         return S_OK;
     }
 
@@ -292,6 +302,37 @@ namespace library
 
         m_aPointLights[index] = pPointLight;
 
+        return hr;
+    }
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Scene::AddSkyBox
+
+      Summary:  Add the skybox
+
+      Args:     const std::shared_ptr<Skybox>&
+                  Skybox to use
+
+      Modifies: [m_skyBox].
+
+      Returns:  HRESULT
+                  Status code
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Scene::AddSkyBox definition (remove the comment)
+    --------------------------------------------------------------------*/
+    HRESULT Scene::AddSkyBox(_In_ const std::shared_ptr<Skybox>& skybox)
+    {
+        HRESULT hr = S_OK;
+
+        if (skybox == nullptr)
+        {
+            return E_INVALIDARG;
+        }
+        else
+        {
+            m_skyBox = skybox;
+        }
         return hr;
     }
 
@@ -381,10 +422,14 @@ namespace library
             it->second->Update(deltaTime);
         }
 
+        
         for (UINT lightIdx = 0; lightIdx < NUM_LIGHTS; ++lightIdx)
         {
             m_aPointLights[lightIdx]->Update(deltaTime);
         }
+        
+        m_skyBox->Update(deltaTime);
+        
     }
 
     std::vector<std::shared_ptr<Voxel>>& Scene::GetVoxels()
@@ -622,4 +667,19 @@ namespace library
         return lerp(x, y, s * s * (3.0f - 2.0f * s));
     }
 
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Scene::GetSkyBox
+
+      Summary:  Returns a sky box
+
+      Returns:  std::shared_ptr<Skybox>&
+                  Sky box
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Scene::GetSkyBox definition (remove the comment)
+    --------------------------------------------------------------------*/
+     std::shared_ptr<Skybox>& Scene::GetSkyBox()
+     {
+         return m_skyBox;
+     }
 }

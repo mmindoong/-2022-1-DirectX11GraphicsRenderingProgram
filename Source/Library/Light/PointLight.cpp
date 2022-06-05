@@ -16,9 +16,10 @@ namespace library
 
       Modifies: [m_position, m_color].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    PointLight::PointLight(_In_ const XMFLOAT4& position, _In_ const XMFLOAT4& color)
+    PointLight::PointLight(_In_ const XMFLOAT4& position, _In_ const XMFLOAT4& color, _In_ FLOAT attenuationDistance)
         : m_position(position)
         , m_color(color)
+        , m_attenuationDistance(attenuationDistance)
         {}
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -58,5 +59,10 @@ namespace library
     void PointLight::Update(_In_ FLOAT deltaTime)
     {
         UNREFERENCED_PARAMETER(deltaTime);
+    }
+
+    FLOAT PointLight::GetAttenuationDistance() const
+    {
+        return m_attenuationDistance;
     }
 }

@@ -1,11 +1,11 @@
 /*+===================================================================
-  File:      SCENE.H
+  File:      V0XEL.H
 
-  Summary:   Scene header file contains declarations of Scene class
+  Summary:   Voxel header file contains declarations of Voxel class
              used for the lab samples of Game Graphics Programming
              course.
 
-  Classes: Scene
+  Classes: Voxel
 
   ?2022 Kyung Hee University
 ===================================================================+*/
@@ -17,9 +17,10 @@
 
 #include "Model/Model.h"
 #include "Light/PointLight.h"
-#include "Renderer/Skybox.h"
 #include "Renderer/Renderable.h"
 #include "Scene/Voxel.h"
+#include "Renderer/Skybox.h"
+
 
 namespace library
 {
@@ -28,6 +29,7 @@ namespace library
     public:
         static FLOAT GetPerlin2d(FLOAT x, FLOAT y, FLOAT frequency, UINT uDepth);
 
+        Scene() = delete;
         Scene(const std::filesystem::path& filePath);
         Scene(const Scene& other) = delete;
         Scene(Scene&& other) = delete;
@@ -43,6 +45,7 @@ namespace library
         HRESULT AddPointLight(_In_ size_t index, _In_ const std::shared_ptr<PointLight>& pPointLight);
         HRESULT AddVertexShader(_In_ PCWSTR pszVertexShaderName, _In_ const std::shared_ptr<VertexShader>& vertexShader);
         HRESULT AddPixelShader(_In_ PCWSTR pszPixelShaderName, _In_ const std::shared_ptr<PixelShader>& pixelShader);
+        HRESULT AddMaterial(_In_ const std::shared_ptr<Material>& material);
         HRESULT AddSkyBox(_In_ const std::shared_ptr<Skybox>& skybox);
 
         void Update(_In_ FLOAT deltaTime);
@@ -53,17 +56,23 @@ namespace library
         std::shared_ptr<PointLight>& GetPointLight(_In_ size_t index);
         std::unordered_map<std::wstring, std::shared_ptr<VertexShader>>& GetVertexShaders();
         std::unordered_map<std::wstring, std::shared_ptr<PixelShader>>& GetPixelShaders();
+        std::unordered_map<std::wstring, std::shared_ptr<Material>>& GetMaterials();
         std::shared_ptr<Skybox>& GetSkyBox();
+
 
         const std::filesystem::path& GetFilePath() const;
         PCWSTR GetFileName() const;
 
         HRESULT SetVertexShaderOfRenderable(_In_ PCWSTR pszRenderableName, _In_ PCWSTR pszVertexShaderName);
         HRESULT SetPixelShaderOfRenderable(_In_ PCWSTR pszRenderableName, _In_ PCWSTR pszPixelShaderName);
+
         HRESULT SetVertexShaderOfModel(_In_ PCWSTR pszModelName, _In_ PCWSTR pszVertexShaderName);
         HRESULT SetPixelShaderOfModel(_In_ PCWSTR pszModelName, _In_ PCWSTR pszPixelShaderName);
+
         HRESULT SetVertexShaderOfVoxel(_In_ PCWSTR pszVertexShaderName);
         HRESULT SetPixelShaderOfVoxel(_In_ PCWSTR pszPixelShaderName);
+        HRESULT SetMaterialOfVoxel(_In_ PCWSTR pszMaterialName);
+
 
     private:
         static FLOAT getNoise2(UINT x, UINT y);
@@ -96,6 +105,7 @@ namespace library
         std::shared_ptr<PointLight> m_aPointLights[NUM_LIGHTS];
         std::unordered_map<std::wstring, std::shared_ptr<VertexShader>> m_vertexShaders;
         std::unordered_map<std::wstring, std::shared_ptr<PixelShader>> m_pixelShaders;
+        std::unordered_map<std::wstring, std::shared_ptr<Material>> m_materials;
         std::shared_ptr<Skybox> m_skyBox;
     };
 }

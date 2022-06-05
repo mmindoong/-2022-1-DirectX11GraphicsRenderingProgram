@@ -59,6 +59,7 @@ namespace library
     {
         XMFLOAT4 LightPositions[NUM_LIGHTS];
         XMFLOAT4 LightColors[NUM_LIGHTS];
+        XMFLOAT4 AttenuationDistance[NUM_LIGHTS];
     };
 
     /*+S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S

@@ -94,35 +94,38 @@ namespace library
         {
             // Compute tangent and bitangent vectors manually
             calculateNormalMapVectors();
-        }
 
-        // Create normal vertex buffer
-        D3D11_BUFFER_DESC nBufferDesc =
-        {
-            .ByteWidth = static_cast<UINT>(sizeof(NormalData) * m_aNormalData.size()),
-            .Usage = D3D11_USAGE_DEFAULT,
-            .BindFlags = D3D11_BIND_VERTEX_BUFFER,
-            .CPUAccessFlags = 0u,
-            .MiscFlags = 0u,
-            .StructureByteStride = 0u
-        };
-        D3D11_SUBRESOURCE_DATA nInitData =
-        {
-            .pSysMem = &m_aNormalData[0],
-            .SysMemPitch = 0u,
-            .SysMemSlicePitch = 0u
-        };
-        hr = pDevice->CreateBuffer(&nBufferDesc, &nInitData, m_normalBuffer.GetAddressOf());
-        if (FAILED(hr))
-        {
-            MessageBox(
-                nullptr,
-                L"Call to CreateNormalBuffer failed!",
-                L"Game Graphics Programming",
-                NULL
-            );
-            return hr;
+
+            // Create normal vertex buffer
+            D3D11_BUFFER_DESC nBufferDesc =
+            {
+                .ByteWidth = static_cast<UINT>(sizeof(NormalData) * m_aNormalData.size()),
+                .Usage = D3D11_USAGE_DEFAULT,
+                .BindFlags = D3D11_BIND_VERTEX_BUFFER,
+                .CPUAccessFlags = 0u,
+                .MiscFlags = 0u,
+                .StructureByteStride = 0u
+            };
+            D3D11_SUBRESOURCE_DATA nInitData =
+            {
+                .pSysMem = &m_aNormalData[0],
+                .SysMemPitch = 0u,
+                .SysMemSlicePitch = 0u
+            };
+            hr = pDevice->CreateBuffer(&nBufferDesc, &nInitData, m_normalBuffer.GetAddressOf());
+            if (FAILED(hr))
+            {
+                MessageBox(
+                    nullptr,
+                    L"Call to CreateNormalBuffer failed!",
+                    L"Game Graphics Programming",
+                    NULL
+                );
+                return hr;
+            }
         }
+        
+        
 
         // Create index buffer
         D3D11_BUFFER_DESC iBufferDesc =

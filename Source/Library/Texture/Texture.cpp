@@ -1,9 +1,11 @@
 #include "Texture.h"
 
 #include "Texture/WICTextureLoader.h"
+#include "Texture/DDSTextureLoader.h"
 
 namespace library
 {
+    ComPtr<ID3D11SamplerState> Texture::s_samplers[static_cast<size_t>(eTextureSamplerType::COUNT)];
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   Texture::Texture
 
@@ -17,9 +19,9 @@ namespace library
     /*--------------------------------------------------------------------
       TODO: Texture::Texture definition (remove the comment)
     --------------------------------------------------------------------*/
-    Texture::Texture(_In_ const std::filesystem::path& filePath)
+    Texture::Texture(_In_ const std::filesystem::path& filePath, _In_opt_ eTextureSamplerType textureSamplerType)
         : m_filePath(filePath)
-        , m_samplerLinear(nullptr)
+        , m_textureSamplerType(textureSamplerType)
         , m_textureRV(nullptr)
     {
     }
@@ -45,30 +47,72 @@ namespace library
         HRESULT hr = S_OK;
 
         hr = CreateWICTextureFromFile(pDevice, pImmediateContext, m_filePath.c_str(), nullptr, m_textureRV.GetAddressOf());
-
         if (FAILED(hr))
-            return hr;
-
-        // Create the sample state
-        D3D11_SAMPLER_DESC sampDesc =
         {
-            .Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR,
-            .AddressU = D3D11_TEXTURE_ADDRESS_WRAP,
-            .AddressV = D3D11_TEXTURE_ADDRESS_WRAP,
-            .AddressW = D3D11_TEXTURE_ADDRESS_WRAP,
-            .ComparisonFunc = D3D11_COMPARISON_NEVER,
-            .MinLOD = 0,
-            .MaxLOD = D3D11_FLOAT32_MAX,
-        };
+            hr = CreateDDSTextureFromFile(pDevice, m_filePath.c_str(), nullptr, m_textureRV.GetAddressOf());
+            if (FAILED(hr))
+            {
+                OutputDebugString(L"Can't load texture from \"");
+                OutputDebugString(m_filePath.c_str());
+                OutputDebugString(L"\n");
+                return hr;
+            }
+        }
 
-        hr = pDevice->CreateSamplerState(&sampDesc, m_samplerLinear.GetAddressOf());
+        // Create the Trilinear Wrap
+        if (!s_samplers[static_cast<size_t>(eTextureSamplerType::TRILINEAR_WRAP)].Get()) //Check whether the sampler type objects are nullptr
+        //If they are nullptr, that means this is the first call to the method, thus initialize the sampler type objects
+        {
+            D3D11_SAMPLER_DESC samplerStateDesc;
+            ZeroMemory(&samplerStateDesc, sizeof(samplerStateDesc));
+            samplerStateDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+            samplerStateDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+            samplerStateDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+            samplerStateDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+            samplerStateDesc.MinLOD = -FLT_MAX;
+            samplerStateDesc.MaxLOD = FLT_MAX;
+            samplerStateDesc.MipLODBias = 0.0f;
+            samplerStateDesc.MaxAnisotropy = 1;
+            samplerStateDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 
+            hr = pDevice->CreateSamplerState(&samplerStateDesc, s_samplers[static_cast<size_t>(eTextureSamplerType::TRILINEAR_WRAP)].GetAddressOf());
+            if (FAILED(hr))
+            {
+                return hr;
+            }
+
+        }
+
+        // Create the Trilinear Clamp
+        if (!s_samplers[static_cast<size_t>(eTextureSamplerType::TRILINEAR_CLAMP)].Get()) //Check whether the sampler type objects are nullptr
+        //If they are nullptr, that means this is the first call to the method, thus initialize the sampler type objects
+        {
+            D3D11_SAMPLER_DESC samplerStateDesc;
+            ZeroMemory(&samplerStateDesc, sizeof(samplerStateDesc));
+            samplerStateDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+            samplerStateDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+            samplerStateDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+            samplerStateDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+            samplerStateDesc.MinLOD = -FLT_MAX;
+            samplerStateDesc.MaxLOD = FLT_MAX;
+            samplerStateDesc.MipLODBias = 0.0f;
+            samplerStateDesc.MaxAnisotropy = 1;
+            samplerStateDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+
+            hr = pDevice->CreateSamplerState(&samplerStateDesc, s_samplers[static_cast<size_t>(eTextureSamplerType::TRILINEAR_CLAMP)].GetAddressOf());
+            if (FAILED(hr))
+            {
+                return hr;
+            }
+        }
         if (FAILED(hr))
         {
             return hr;
         }
 
         return S_OK;
+
+
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -84,16 +128,10 @@ namespace library
         return m_textureRV;
     }
 
-    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
-      Method:   Texture::GetSamplerState
 
-      Summary:  Constructor
-
-      Returns:  ComPtr<ID3D11SamplerState>&
-                  Sampler state
-    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    ComPtr<ID3D11SamplerState>& Texture::GetSamplerState()
+    eTextureSamplerType Texture::GetSamplerType() const
     {
-        return m_samplerLinear;
+        return m_textureSamplerType;
     }
+
 }
