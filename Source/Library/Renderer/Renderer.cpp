@@ -487,8 +487,8 @@ namespace library
                 attenuationDistanceSquared
             );
             //attenuationDistance -> 값 0 들어감
-            //cbLights.LightViews[i] = m_scenes[m_pszMainSceneName]->GetPointLight(i)->GetViewMatrix();
-            //cbLights.LightProjections[i] = m_scenes[m_pszMainSceneName]->GetPointLight(i)->GetProjectionMatrix();
+            cbLights.LightViews[i] = XMMatrixTranspose(m_scenes[m_pszMainSceneName]->GetPointLight(i)->GetViewMatrix());
+            cbLights.LightProjections[i] = XMMatrixTranspose(m_scenes[m_pszMainSceneName]->GetPointLight(i)->GetProjectionMatrix());
         }
         m_immediateContext->UpdateSubresource(m_cbLights.Get(), 0u, nullptr, &cbLights, 0u, 0u);
 
@@ -538,14 +538,6 @@ namespace library
             m_immediateContext->PSSetConstantBuffers(2u, 1u, renderable->second->GetConstantBuffer().GetAddressOf());
             m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
 
-            if (m_shadowMapTexture != nullptr)
-            {
-                m_immediateContext->PSSetShaderResources(4u, 1u, m_shadowMapTexture->GetShaderResourceView().GetAddressOf());
-                m_immediateContext->PSSetSamplers(4u, 1u, m_shadowMapTexture->GetSamplerState().GetAddressOf());
-            }
-            // Bind texture and sampler state of the shadow map m_shadowMapTexture
-
-
             if (renderable->second->HasTexture())
             {
                 for (UINT i = 0u; i < renderable->second->GetNumMeshes(); ++i)
@@ -571,6 +563,13 @@ namespace library
                         m_immediateContext->PSSetSamplers(1u, 1u,
                             Texture::s_samplers[static_cast<size_t>(textureSamplerType)].GetAddressOf());
                     }
+
+                    if (m_shadowMapTexture != nullptr)
+                    {
+                        m_immediateContext->PSSetShaderResources(4u, 1u, m_shadowMapTexture->GetShaderResourceView().GetAddressOf());
+                        m_immediateContext->PSSetSamplers(4u, 1u, m_shadowMapTexture->GetSamplerState().GetAddressOf());
+                    }
+                    // Bind texture and sampler state of the shadow map m_shadowMapTexture
 
                     // Render the triangles
                     m_immediateContext->DrawIndexed(renderable->second->GetMesh(i).uNumIndices,
@@ -632,11 +631,7 @@ namespace library
             m_immediateContext->PSSetConstantBuffers(2u, 1u, voxel->get()->GetConstantBuffer().GetAddressOf());
             m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
 
-            if (m_shadowMapTexture != nullptr)
-            {
-                m_immediateContext->PSSetShaderResources(2u, 1u, m_shadowMapTexture->GetShaderResourceView().GetAddressOf());
-                m_immediateContext->PSSetSamplers(2u, 1u, m_shadowMapTexture->GetSamplerState().GetAddressOf());
-            }
+          
 
             if (voxel->get()->HasTexture())
             {
@@ -664,6 +659,11 @@ namespace library
                             Texture::s_samplers[static_cast<size_t>(textureSamplerType)].GetAddressOf());
                     }
 
+                    if (m_shadowMapTexture != nullptr)
+                    {
+                        m_immediateContext->PSSetShaderResources(2u, 1u, m_shadowMapTexture->GetShaderResourceView().GetAddressOf());
+                        m_immediateContext->PSSetSamplers(2u, 1u, m_shadowMapTexture->GetSamplerState().GetAddressOf());
+                    }
                     // Render the triangles
                     m_immediateContext->DrawIndexedInstanced(voxel->get()->GetMesh(i).uNumIndices,
                         voxel->get()->GetNumInstances(),
