@@ -73,6 +73,9 @@
     <None Include="Shaders\CubeMap.fxh">
       <Filter>소스 파일\Shaders</Filter>
     </None>
+    <None Include="Shaders\ShadowShaders.fxh">
+      <Filter>소스 파일\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cube\BaseCube.h">

@@ -8,10 +8,12 @@
   Args:     const std::filesystem::path& textureFilePath
               Path to the texture to use
 M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+/*
 Cube::Cube(_In_ const std::filesystem::path& textureFilePath)
     : BaseCube(textureFilePath)
 {
 }
+*/
 
 /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
   Method:   Cube::Cube
@@ -25,6 +27,22 @@ Cube::Cube(_In_ const XMFLOAT4& outputColor)
     : BaseCube(outputColor)
 {
 }
+
+HRESULT Cube::Initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext)
+{
+    BasicMeshEntry basicMeshEntry;
+    basicMeshEntry.uNumIndices = NUM_INDICES;
+
+    m_aMeshes.push_back(basicMeshEntry);
+
+    if (HasTexture())
+    {
+        SetMaterialOfMesh(0, 0);
+    }
+
+    return initialize(pDevice, pImmediateContext);
+}
+
 
 /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
   Method:   Cube::Update

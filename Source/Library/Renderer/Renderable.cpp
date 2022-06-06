@@ -95,7 +95,6 @@ namespace library
             // Compute tangent and bitangent vectors manually
             calculateNormalMapVectors();
 
-
             // Create normal vertex buffer
             D3D11_BUFFER_DESC nBufferDesc =
             {

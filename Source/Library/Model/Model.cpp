@@ -91,6 +91,7 @@ namespace library
         , m_pScene(nullptr)
         , m_timeSinceLoaded(0.0f)
         , m_globalInverseTransform(XMMatrixIdentity())
+        
     {
         // empty
     }
@@ -138,34 +139,34 @@ namespace library
             OutputDebugString(L"\n");
         }
 
-        // Create the animation buffer
-        D3D11_BUFFER_DESC aBufferDesc =
+        if (m_aAnimationData.size() != 0)
         {
-            .ByteWidth = static_cast<UINT>(sizeof(AnimationData) * m_aAnimationData.size()),
-            .Usage = D3D11_USAGE_DEFAULT,
-            .BindFlags = D3D11_BIND_VERTEX_BUFFER,
-            .CPUAccessFlags = 0u,
-            .MiscFlags = 0u,
-            .StructureByteStride = 0u
-        };
-        D3D11_SUBRESOURCE_DATA aInitData =
-        {
-            .pSysMem = &m_aAnimationData[0],
-            .SysMemPitch = 0u,
-            .SysMemSlicePitch = 0u
-        };
-        hr = pDevice->CreateBuffer(&aBufferDesc, &aInitData, m_animationBuffer.GetAddressOf());
-        if (FAILED(hr))
-        {
-            MessageBox(
-                nullptr,
-                L"Call to CreateAnimationBuffer failed!",
-                L"Game Graphics Programming",
-                NULL
-            );
-            return hr;
-        }
+            // Create the animation buffer
+            D3D11_BUFFER_DESC aBufferDesc =
+            {
+                .ByteWidth = static_cast<UINT>(sizeof(AnimationData) * m_aAnimationData.size()),
+                .Usage = D3D11_USAGE_DEFAULT,
+                .BindFlags = D3D11_BIND_VERTEX_BUFFER,
+                .CPUAccessFlags = 0u,
+                .MiscFlags = 0u,
+                .StructureByteStride = 0u
+            };
+            D3D11_SUBRESOURCE_DATA InitData = {}; // with initial data m_aAnimationData
+            hr = pDevice->CreateBuffer(&aBufferDesc, &InitData, m_animationBuffer.GetAddressOf());
 
+            if (FAILED(hr))
+            {
+                MessageBox(
+                    nullptr,
+                    L"Call to CreateAnimationBuffer failed!",
+                    L"Game Graphics Programming",
+                    NULL
+                );
+                return hr;
+            }
+        }
+       
+        
         // Create the skinning constant buffer
         D3D11_BUFFER_DESC scBufferDesc =
         {

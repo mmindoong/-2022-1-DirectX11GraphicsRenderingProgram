@@ -29,4 +29,11 @@ void RotatingPointLight::Update(_In_ FLOAT deltaTime)
     XMVECTOR position = XMLoadFloat4(&m_position);
     position = XMVector3Transform(position, rotate);
     XMStoreFloat4(&m_position, position);
+
+    // Create the view matrix
+    // XMMatrixLookAtLH 카메라의 위치와 타겟의 위치를 입력하여 카메라가 타겟을. 바라보는 방향에 대한 View 행렬을 생성.
+    XMVECTOR eye = position; // Eye : current position of the light
+    XMVECTOR at = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+    XMVECTOR up = DEFAULT_UP;
+    XMMATRIX view = XMMatrixLookAtLH(eye, at, up);
 }

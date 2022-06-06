@@ -28,7 +28,7 @@ namespace library
         , m_voxels()
         , m_renderables()
         , m_models()
-        , m_aPointLights{ nullptr,nullptr }
+        , m_aPointLights{ nullptr }
         , m_vertexShaders()
         , m_pixelShaders()
         , m_materials()
@@ -428,7 +428,8 @@ namespace library
             m_aPointLights[lightIdx]->Update(deltaTime);
         }
         
-        m_skyBox->Update(deltaTime);
+        if(m_skyBox)
+            m_skyBox->Update(deltaTime);
         
     }
 
