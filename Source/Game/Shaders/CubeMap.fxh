@@ -72,6 +72,7 @@ C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 struct VS_INPUT
 {
     float4 Position : POSITION;
+    float3 Normal : NORMAL;
 };
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
@@ -87,6 +88,8 @@ struct PS_INPUT
 {
     float4 Position : SV_POSITION;
     float3 TexCoord : TEXCOORD0;
+    float3 WorldPosition : WORLDPOS;
+    float3 Normal : NORMAL;
 };
 
 
@@ -109,7 +112,7 @@ PS_INPUT VSCubeMap(VS_INPUT input)
     return output;
 }
 
-/*
+
 PS_INPUT VSEnvironmentMap(VS_INPUT input)
 {
     PS_INPUT output = (PS_INPUT) 0;
@@ -119,18 +122,18 @@ PS_INPUT VSEnvironmentMap(VS_INPUT input)
     output.Position = mul(output.Position, View);
     output.Position = mul(output.Position, Projection);
     
-    output.TexCoord = input.TexCoord;
-
-    float3 worldPosition = mul(input.Position, World).xyz;
-    float3 incident = normalize(worldPosition - (float) CameraPosition);
-    float3 normal = normalize(mul(float4(input.Normal, 0), World).xyz);
+    output.Normal = mul(float4(input.Normal, 0.0f), World).xyz;
+    
+    //float3 worldPosition = mul(input.Position, World).xyz;
+    //float3 incident = normalize(worldPosition - (float) CameraPosition);
 
 	// Reflection Vector for cube map: R = I - 2*N * (I.N)
     //output.ReflectionVector = reflect(incident, normal);
 	
     return output;
 }
-*/
+
+
 
 //--------------------------------------------------------------------------------------
 // Pixel Shader
@@ -142,7 +145,7 @@ float4 PSCubeMap(PS_INPUT input) : SV_Target
 {
     return SkyCube.Sample(diffuseSampler, input.TexCoord);
 }
-/*
+
 float4 PSEnvironmentMap(PS_INPUT input) : SV_TARGET
 {
     float4 output = (float4) 0;
@@ -150,13 +153,13 @@ float4 PSEnvironmentMap(PS_INPUT input) : SV_TARGET
     float3 incident = normalize(input.WorldPosition - (float) CameraPosition);
     float3 normal = normalize(mul(float4(input.Normal, 0), World).xyz);
     // Reflection Vector for cube map: R = I - 2*N * (I.N)
-    float4 ReflectionVector = reflect(incident, normal);
+    float3 ReflectionVector = reflect(incident, normal);
     
-    float4 color = diffuseTexture.Sample(diffuseSamplers, input.TexCoord);
-    float3 ambient = (float) OutputColor * color.rgb;
-    float3 environment = EnvironmentColor * diffuseTexture.Sample(diffuseSamplers, (float2) ReflectionVector).rgb;
+    //float4 color = SkyCube.Sample(diffuseSampler, 0.1f);
+    //float3 ambient = (float) OutputColor * color.rgb;
+    float3 environment = SkyCube.Sample(diffuseSampler, ReflectionVector);
 
-    return float4(saturate(lerp(ambient, environment, 0.6f), color.a);
+    return float4(environment, 0.5f);
+    //return float4(saturate(lerp(ambient, environment, 0.6f), color.a);
 
 }
-*/

@@ -731,7 +731,7 @@ namespace library
             CBChangesEveryFrame cbChangesEveryFrame =
             {
                 .World = XMMatrixTranspose(m_scenes[m_pszMainSceneName]->GetSkyBox()->GetWorldMatrix() * cameraPosition),
-                //.World = XMMatrixTranspose(m_camera.GetView() * m_projection * m_scenes[m_pszMainSceneName]->GetSkyBox()->GetWorldMatrix()),
+                //.World = XMMatrixTranspose(m_camera.GetView() * m_scenes[m_pszMainSceneName]->GetSkyBox()->GetWorldMatrix()),
                 .OutputColor = m_scenes[m_pszMainSceneName]->GetSkyBox()->GetOutputColor(),
                 .HasNormalMap = m_scenes[m_pszMainSceneName]->GetSkyBox()->HasNormalMap()
             };

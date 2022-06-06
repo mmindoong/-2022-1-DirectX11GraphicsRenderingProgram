@@ -66,7 +66,8 @@ namespace library
         D3D11_INPUT_ELEMENT_DESC layout[] =
         {
             // 0th input slot for SimpleVertex
-            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0},
         };
         UINT numElements = ARRAYSIZE(layout);
 
